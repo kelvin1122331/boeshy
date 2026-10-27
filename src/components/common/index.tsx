@@ -18,9 +18,15 @@ export function Icon({
     (Icons as unknown as Record<string, LucideIcon>)[name] || Icons.Sparkles;
   return <C size={20} strokeWidth={1.7} {...props} />;
 }
-export function Logo({ small = false }: { small?: boolean }) {
+export function Logo({
+  small = false,
+  href = "/dashboard",
+}: {
+  small?: boolean;
+  href?: string;
+}) {
   return (
-    <Link href="/dashboard" className="logo">
+    <Link href={href} className="logo">
       <span className="logo-mark">
         <svg
           width="22"

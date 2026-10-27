@@ -40,6 +40,10 @@ npm audit
 
 In PowerShell set `$env:RUN_INFRA_TESTS='true'`. Unit tests ordinarily skip the worker integration check unless explicitly enabled. The upload E2E check skips if no `S3_ENDPOINT` is provided to the test process. The committed CI config provisions database, Redis, S3-compatible storage and worker before checking the app.
 
+## Public navigation revision
+
+The public homepage was shortened and the full capability catalogue, workflow explanation, and privacy information moved to `/features`, `/how-it-works`, and `/privacy`. Three additional Playwright checks passed for real page navigation, all 18 catalogue entries/search/category filters, mobile navigation/current-page labels, and overflow checks at 1440px, 988px, and 390px in light/dark themes. A fresh production build, strict type check and lint check passed for this revision. These are additional to the original four workspace/storage/exam E2E checks above.
+
 ## Verification limits
 
 - OpenAI/Anthropic generation, Tavily research, Google login, Resend email delivery and Canva OAuth/import/export were **not exercised against paid or personal accounts**, because their credentials were not supplied. Their adapters compile and validate inputs/outputs, but real account access, scopes, limits and provider behavior still require smoke tests.

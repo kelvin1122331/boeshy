@@ -38,6 +38,10 @@ Jika port 3000 terpakai, jalankan `npm run dev -- --port 3217` dan samakan `APP_
 
 `npm run db:local` menjalankan PostgreSQL native khusus pengembangan di `127.0.0.1:54328` dengan data di `.local/postgres-native`. URL pengembangan: `postgresql://postgres:local-qa-password@127.0.0.1:54328/postgres`. Atur `DATABASE_URL` lalu jalankan migrasi. Jangan menggunakan kredensial atau proses ini untuk produksi. Redis dan S3 tetap diperlukan untuk pekerjaan AI serta upload.
 
+## Halaman publik
+
+Beranda `/` memberikan pengantar ringkas. **Kemampuan** dan **Explore Features** menuju `/features`, dengan pencarian dan filter untuk 18 alat. **Cara kerja** menuju `/how-it-works`, sedangkan penjelasan pengelolaan data berada di `/privacy`. Semua halaman ini dapat dibaca tanpa login dan memiliki navigasi desktop serta menu mobile yang sama.
+
 ## Arsitektur
 
 - **Frontend:** Next.js App Router, React, TypeScript strict, Tailwind CSS 4, komponen Button bergaya shadcn dengan Radix Slot, Radix Dialog, Lucide, React Hook Form + Zod, dan tema terang/gelap.
