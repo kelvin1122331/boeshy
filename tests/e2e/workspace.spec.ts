@@ -98,9 +98,11 @@ test("real registration, authenticated routes, task CRUD, projects and mobile la
     fullPage: true,
   });
   await page.setViewportSize({ width: 1440, height: 1000 });
+  await expect(page.locator('.app-main')).toHaveCSS('margin-left','260px');
   await page.screenshot({
     path: "test-results/dashboard-desktop.png",
     fullPage: true,
+    animations:'disabled',
   });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "Buka navigasi" }).click();
