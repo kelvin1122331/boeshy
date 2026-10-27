@@ -1,0 +1,975 @@
+.cosmos-auth {
+  --bg: #030a14;
+  --surface: #081524;
+  --surface-alt: #102137;
+  --text: #f2f7ff;
+  --muted: #a3bad4;
+  --border: #344e69;
+  --primary: #20a7ff;
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  color: var(--text);
+  color-scheme: dark;
+  background: #030a14;
+}
+.cosmos-background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.cosmos-background img {
+  object-fit: cover;
+  object-position: center;
+}
+.cosmos-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, #01070e6e, #020a1414 52%, #0209161a),
+    linear-gradient(
+      180deg,
+      #0006 0%,
+      transparent 18%,
+      transparent 85%,
+      #0208103d
+    );
+}
+.cosmos-header {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 75px;
+  width: 88%;
+  max-width: 1352px;
+  min-height: 74px;
+  margin: 0 auto;
+  padding: 18px 0 12px;
+}
+.cosmos-header .logo {
+  color: #f7fbff;
+  font-size: 24px;
+  gap: 11px;
+  font-weight: 650;
+  letter-spacing: -0.6px;
+  flex-shrink: 0;
+}
+.cosmos-header .logo-mark {
+  width: 35px;
+  height: 35px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #129cff, #0052ff);
+  box-shadow:
+    inset 0 0 0 1px #77c8ff42,
+    0 0 15px #0c8bff26;
+}
+.cosmos-header .logo-mark svg {
+  width: 24px;
+  height: 24px;
+}
+.cosmos-desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 43px;
+}
+.cosmos-desktop-nav a {
+  font-size: 16px;
+  font-weight: 500;
+  text-shadow: 0 2px 10px #0009;
+}
+.cosmos-desktop-nav a:hover {
+  color: #65d7ff;
+}
+.cosmos-header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 44px;
+}
+.cosmos-language {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 550;
+}
+.cosmos-header-login {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 108px;
+  min-height: 41px;
+  border: 1px solid #c5e0f4;
+  border-radius: 12px;
+  background: #050c1466;
+  font-size: 15px;
+  font-weight: 600;
+  transition:
+    background 0.18s,
+    border-color 0.18s;
+}
+.cosmos-header-login:hover {
+  background: #0c2948b8;
+  border-color: #59d2ff;
+}
+.cosmos-menu-toggle,
+.cosmos-mobile-nav {
+  display: none;
+}
+.cosmos-main {
+  width: 88%;
+  max-width: 1352px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 570px);
+  align-items: start;
+  gap: 80px;
+  flex: 1;
+  padding: 0 0 0;
+}
+.cosmos-story {
+  padding: 122px 0 30px 10px;
+}
+.cosmos-eyebrow {
+  display: block;
+  font-size: 11px;
+  line-height: 1.7;
+  letter-spacing: 4.2px;
+  font-weight: 600;
+  color: #e5f5ff;
+}
+.cosmos-story h2 {
+  font-size: clamp(44px, 4.15vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -2.2px;
+  font-weight: 700;
+  margin-top: 15px;
+  color: #f6f9ff;
+  text-shadow: 0 3px 24px #01091266;
+}
+.cosmos-story h2 > span {
+  color: #30b7fb;
+  background: linear-gradient(110deg, #23c4f7, #3a9cff);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+.cosmos-story > p {
+  margin-top: 27px;
+  font-size: 19px;
+  line-height: 1.55;
+  color: #d3eaff;
+  text-shadow: 0 2px 12px #000b;
+}
+.cosmos-possibilities {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  max-width: 462px;
+  gap: 8px;
+  margin-top: 26px;
+}
+.cosmos-possibilities > a {
+  min-height: 141px;
+  padding: 11px 8px 14px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  border: 1px solid #69a8d00c;
+  border-radius: 17px;
+  background: linear-gradient(145deg, #0e2539c9, #010b15d1);
+  box-shadow: inset 0 1px 0 #93d6ff0d;
+  backdrop-filter: blur(7px);
+  transition:
+    transform 0.18s,
+    background 0.18s;
+}
+.cosmos-possibilities > a:hover {
+  transform: translateY(-3px);
+  background: #102e49e6;
+}
+.cosmos-possibilities > a > span {
+  display: grid;
+  place-items: center;
+  height: 55px;
+  width: 55px;
+  border: 1px solid #4387b2;
+  border-radius: 50%;
+  color: #69d0ff;
+  background: #000a1466;
+  margin-bottom: 7px;
+}
+.cosmos-possibilities strong {
+  font-size: 13px;
+  font-weight: 650;
+  white-space: nowrap;
+  line-height: 1.6;
+}
+.cosmos-possibilities p {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #e0effe;
+  margin-top: 3px;
+  max-width: 100px;
+}
+.cosmos-panel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 31px 49px 30px;
+  border: 1px solid transparent;
+  border-radius: 33px;
+  background:
+    linear-gradient(145deg, #06131de8, #020810f5 68%, #051324ed) padding-box,
+    linear-gradient(145deg, #9eebff, #1b6caa 18%, #152a6c 60%, #145bff)
+      border-box;
+  box-shadow:
+    inset 0 0 35px #1063c51a,
+    -6px 0 21px #69dcff15,
+    0 20px 65px #0004;
+  backdrop-filter: blur(12px);
+}
+.cosmos-panel::before {
+  content: "";
+  z-index: -1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 210px;
+  background: url("/marketing/holyai-orbit-auth.webp") right top / 1420px auto
+    no-repeat;
+  opacity: 0.65;
+  mask-image: linear-gradient(180deg, #000, #0009 45%, transparent);
+  pointer-events: none;
+}
+.cosmos-panel-login {
+  min-height: 810px;
+}
+.cosmos-panel-register {
+  min-height: 870px;
+}
+.cosmos-panel-forgot-password,
+.cosmos-panel-reset-password {
+  min-height: 650px;
+}
+.cosmos-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #19b5ff;
+  font-size: 14px;
+  width: fit-content;
+  margin-left: -15px;
+}
+.cosmos-back:hover {
+  color: #84e5ff;
+}
+.cosmos-panel-heading {
+  margin-top: 25px;
+}
+.cosmos-panel-heading h1 {
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -1.35px;
+  margin: 0;
+  color: #f3f6fc;
+}
+.cosmos-panel-heading h1 > span {
+  background: linear-gradient(100deg, #8fddff, #58c9ff 60%, #eff6ff 100%);
+  color: #7bd5ff;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.cosmos-panel-heading > p {
+  margin-top: 12px;
+  color: #d1e7ff;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.cosmos-panel .alert {
+  margin: 18px 0 0;
+  border-color: #294b6d;
+  background: #0d2748e6;
+  color: #d2e8ff;
+  font-size: 13px;
+}
+.cosmos-panel .alert-error {
+  background: #3e1423eb;
+  border-color: #9f4359;
+  color: #ffe2e9;
+}
+.cosmos-email-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 21px;
+  padding: 14px 18px;
+  border: 1px solid #25466b;
+  border-radius: 12px;
+  background: #0b2549e6;
+}
+.cosmos-email-notice > svg {
+  color: #63d4ff;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.cosmos-email-notice p {
+  color: #cfe4ff;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.cosmos-form {
+  margin-top: 25px;
+}
+.cosmos-email-notice + .cosmos-form {
+  margin-top: 17px;
+}
+.cosmos-field {
+  margin-bottom: 17px;
+}
+.cosmos-field > label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.6;
+  margin-bottom: 6px;
+  color: #f2f6ff;
+}
+.cosmos-input {
+  position: relative;
+}
+.cosmos-input > svg {
+  position: absolute;
+  z-index: 1;
+  left: 17px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #e0edff;
+  pointer-events: none;
+}
+.cosmos-auth .cosmos-input input {
+  padding: 12px 17px 12px 57px;
+  height: 50px;
+  min-height: 50px;
+  font-size: 14px;
+  line-height: 1.5;
+  border: 1px solid #465d76;
+  border-radius: 11px;
+  background: linear-gradient(120deg, #07121cd6, #0d1825bf);
+  color: #edf6ff;
+  box-shadow: inset 0 1px 4px #0003;
+}
+.cosmos-auth .cosmos-input input::placeholder {
+  color: #90a9c5;
+  opacity: 1;
+}
+.cosmos-auth .cosmos-input input:focus-visible {
+  border-color: #71d8ff;
+  outline: none;
+  box-shadow: 0 0 0 3px #4fc9ff26;
+}
+.cosmos-auth .cosmos-password input {
+  padding-right: 53px;
+}
+.cosmos-password-toggle {
+  position: absolute;
+  right: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 31px;
+  width: 31px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #9fb6d1;
+  border-radius: 6px;
+}
+.cosmos-password-toggle:hover {
+  color: #6fd6ff;
+  background: #1637567a;
+}
+.cosmos-forgot {
+  margin: -2px 0 20px;
+  text-align: right;
+  font-size: 12px;
+  color: #58c9ff;
+}
+.cosmos-forgot a:hover {
+  color: #a3e7ff;
+}
+.cosmos-auth .cosmos-submit {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 18px;
+  border: 1px solid #64dcff;
+  border-radius: 12px;
+  background: linear-gradient(110deg, #39c9f7 0%, #1b83ff 43%, #064bff 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 650;
+  box-shadow:
+    inset 0 0 9px #8aeaffaa,
+    0 0 10px #0089ffb0,
+    0 4px 21px #086eff52;
+  gap: 12px;
+  transition:
+    box-shadow 0.18s,
+    filter 0.18s;
+}
+.cosmos-auth .cosmos-submit:hover:enabled {
+  filter: brightness(1.13);
+  box-shadow:
+    inset 0 0 9px #8aeaffaa,
+    0 0 18px #0089ffd0,
+    0 4px 24px #086eff80;
+}
+.cosmos-auth .cosmos-submit:disabled {
+  opacity: 0.6;
+  box-shadow: none;
+}
+.cosmos-submit .lucide-loader-circle {
+  animation: cosmos-spin 1.2s linear infinite;
+}
+@keyframes cosmos-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.cosmos-account-switch {
+  color: #deefff;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.7;
+  margin-top: 17px;
+}
+.cosmos-account-switch a {
+  color: #00adff;
+}
+.cosmos-account-switch a:hover {
+  color: #9ee6ff;
+}
+.cosmos-social {
+  margin-top: 23px;
+}
+.cosmos-separator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #93aecb;
+}
+.cosmos-separator::before,
+.cosmos-separator::after {
+  content: "";
+  height: 1px;
+  background: #40576d;
+  flex: 1;
+}
+.cosmos-social-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 11px;
+  margin-top: 15px;
+}
+.cosmos-social-buttons > button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 46px;
+  border: 1px solid #354b61;
+  border-radius: 11px;
+  background: linear-gradient(120deg, #111e2ae8, #101924e3);
+  color: #c8def6;
+  font-size: 13px;
+  padding: 8px;
+}
+.cosmos-social-buttons > button:disabled {
+  opacity: 1;
+  color: #c0d4ea;
+  cursor: not-allowed;
+}
+.cosmos-social-buttons > button:hover:enabled {
+  border-color: #69d6ff;
+  background: #19314b;
+}
+.cosmos-google-mark {
+  font-size: 25px;
+  line-height: 1;
+  font-family: Arial, sans-serif;
+  font-weight: 750;
+  background: conic-gradient(
+    #4285f4 0deg 90deg,
+    #34a853 90deg 165deg,
+    #fbbc05 165deg 220deg,
+    #ea4335 220deg 285deg,
+    #4285f4 285deg 360deg
+  );
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.cosmos-microsoft-mark {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  width: 18px;
+  height: 18px;
+}
+.cosmos-microsoft-mark i:nth-child(1) {
+  background: #f25022;
+}
+.cosmos-microsoft-mark i:nth-child(2) {
+  background: #7fba00;
+}
+.cosmos-microsoft-mark i:nth-child(3) {
+  background: #00a4ef;
+}
+.cosmos-microsoft-mark i:nth-child(4) {
+  background: #ffb900;
+}
+.cosmos-social-buttons svg {
+  flex-shrink: 0;
+}
+.cosmos-social-status {
+  text-align: center;
+  font-size: 10px;
+  color: #88a3bf;
+  margin-top: 9px;
+  line-height: 1.6;
+}
+.cosmos-terms {
+  text-align: center;
+  margin: auto 0 0;
+  padding-top: 21px;
+  font-size: 11px;
+  line-height: 1.8;
+  color: #bdd6ee;
+}
+.cosmos-terms a {
+  color: #84d2fb;
+  white-space: nowrap;
+}
+.cosmos-terms a:hover {
+  text-decoration: underline;
+}
+.cosmos-footer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  width: 94%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 14px 0 19px;
+  color: #a6c8e6;
+}
+.cosmos-footer > span:first-child {
+  font-size: 12px;
+  line-height: 1.4;
+  padding-left: 11px;
+  border-left: 1px solid #12adff;
+}
+.cosmos-footer > span:last-child {
+  font-size: 9px;
+  letter-spacing: 2.3px;
+  line-height: 1.65;
+  color: #bfe9ff;
+}
+@media (min-width: 1700px) {
+  .cosmos-main {
+    align-items: center;
+    padding: 20px 0;
+  }
+  .cosmos-story {
+    padding-top: 0;
+  }
+}
+@media (max-width: 1250px) {
+  .cosmos-header {
+    width: 90%;
+    gap: 45px;
+  }
+  .cosmos-desktop-nav {
+    gap: 28px;
+  }
+  .cosmos-header-actions {
+    gap: 27px;
+  }
+  .cosmos-main {
+    width: 90%;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 46%);
+    gap: 40px;
+  }
+  .cosmos-story {
+    padding-left: 0;
+    padding-top: 125px;
+  }
+  .cosmos-story h2 {
+    font-size: 52px;
+  }
+  .cosmos-story > p {
+    font-size: 16px;
+    line-height: 1.7;
+    max-width: 380px;
+  }
+  .cosmos-desktop-break {
+    display: none;
+  }
+  .cosmos-possibilities {
+    gap: 6px;
+  }
+  .cosmos-possibilities > a {
+    padding: 11px 6px;
+    min-height: 139px;
+    border-radius: 12px;
+  }
+  .cosmos-possibilities > a > span {
+    width: 48px;
+    height: 48px;
+  }
+  .cosmos-possibilities strong {
+    font-size: 11px;
+  }
+  .cosmos-possibilities p {
+    font-size: 10px;
+  }
+  .cosmos-panel {
+    padding: 31px 32px 28px;
+    border-radius: 28px;
+  }
+  .cosmos-panel-heading h1 {
+    font-size: 34px;
+  }
+  .cosmos-panel-heading > p {
+    font-size: 14px;
+  }
+  .cosmos-back {
+    margin-left: 0;
+    font-size: 13px;
+  }
+  .cosmos-social-buttons {
+    gap: 8px;
+  }
+  .cosmos-social-buttons > button {
+    font-size: 12px;
+    gap: 7px;
+  }
+  .cosmos-email-notice {
+    gap: 12px;
+    padding: 13px;
+  }
+  .cosmos-email-notice p {
+    font-size: 12px;
+  }
+}
+@media (max-width: 1050px) {
+  .cosmos-header {
+    min-height: 75px;
+  }
+  .cosmos-desktop-nav {
+    display: none;
+  }
+  .cosmos-menu-toggle {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: #0e223a7a;
+  }
+  .cosmos-mobile-nav {
+    position: absolute;
+    top: calc(100% - 4px);
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 9px;
+    border: 1px solid #3e6a92;
+    border-radius: 14px;
+    background: #071726f5;
+    box-shadow: 0 20px 40px #0007;
+    backdrop-filter: blur(12px);
+  }
+  .cosmos-mobile-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    color: #dfefff;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+  .cosmos-mobile-nav a:hover {
+    background: #173554;
+  }
+  .cosmos-header-actions {
+    gap: 22px;
+  }
+  .cosmos-eyebrow {
+    font-size: 9px;
+    letter-spacing: 2.9px;
+  }
+  .cosmos-story h2 {
+    font-size: 47px;
+    letter-spacing: -1.6px;
+  }
+  .cosmos-story > p {
+    font-size: 15px;
+  }
+  .cosmos-panel {
+    padding: 29px 26px 25px;
+  }
+  .cosmos-panel-heading h1 {
+    font-size: 31px;
+    letter-spacing: -1px;
+  }
+  .cosmos-possibilities {
+    grid-template-columns: 1fr 1fr;
+    max-width: 290px;
+  }
+  .cosmos-possibilities > a {
+    min-height: 133px;
+  }
+  .cosmos-possibilities p {
+    max-width: 115px;
+  }
+  .cosmos-social-buttons > button {
+    font-size: 11px;
+    gap: 5px;
+    padding: 8px 5px;
+  }
+  .cosmos-google-mark {
+    font-size: 23px;
+  }
+  .cosmos-microsoft-mark {
+    width: 16px;
+    height: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .cosmos-main {
+    display: block;
+    max-width: 600px;
+    width: calc(100% - 48px);
+    padding: 15px 0;
+  }
+  .cosmos-story {
+    display: none;
+  }
+  .cosmos-panel {
+    padding: 32px 42px;
+  }
+  .cosmos-panel-login {
+    min-height: 750px;
+  }
+  .cosmos-panel-register {
+    min-height: 850px;
+  }
+  .cosmos-panel-heading h1 {
+    font-size: 38px;
+  }
+  .cosmos-panel-heading > p {
+    font-size: 15px;
+  }
+  .cosmos-social-buttons > button {
+    font-size: 13px;
+    gap: 10px;
+  }
+  .cosmos-background::after {
+    background: linear-gradient(180deg, #01071080, #06132929 40%, #010a1666);
+  }
+  .cosmos-footer {
+    padding-top: 7px;
+  }
+}
+@media (max-width: 600px) {
+  .cosmos-header {
+    width: calc(100% - 40px);
+    min-height: 72px;
+    padding: 16px 0 12px;
+    gap: 10px;
+  }
+  .cosmos-header .logo {
+    font-size: 21px;
+    gap: 9px;
+  }
+  .cosmos-header .logo-mark {
+    width: 31px;
+    height: 33px;
+  }
+  .cosmos-header-actions {
+    gap: 14px;
+  }
+  .cosmos-header-login {
+    display: none;
+  }
+  .cosmos-language {
+    font-size: 12px;
+    gap: 7px;
+  }
+  .cosmos-language svg {
+    width: 19px;
+  }
+  .cosmos-menu-toggle {
+    width: 31px;
+    height: 33px;
+  }
+  .cosmos-main {
+    width: calc(100% - 28px);
+    padding: 6px 0 20px;
+  }
+  .cosmos-panel {
+    border-radius: 25px;
+    padding: 25px 23px;
+  }
+  .cosmos-panel-login {
+    min-height: 675px;
+  }
+  .cosmos-panel-register {
+    min-height: 800px;
+  }
+  .cosmos-panel-forgot-password,
+  .cosmos-panel-reset-password {
+    min-height: 590px;
+  }
+  .cosmos-back {
+    font-size: 12px;
+    gap: 8px;
+  }
+  .cosmos-panel-heading {
+    margin-top: 24px;
+  }
+  .cosmos-panel-heading h1 {
+    font-size: clamp(29px, 7.7vw, 37px);
+    letter-spacing: -1px;
+  }
+  .cosmos-panel-heading > p {
+    font-size: 13px;
+    line-height: 1.65;
+    margin-top: 12px;
+  }
+  .cosmos-email-notice {
+    padding: 12px;
+    gap: 10px;
+    margin-top: 19px;
+  }
+  .cosmos-email-notice > svg {
+    width: 22px;
+  }
+  .cosmos-email-notice p {
+    font-size: 11px;
+    line-height: 1.7;
+  }
+  .cosmos-form {
+    margin-top: 25px;
+  }
+  .cosmos-field {
+    margin-bottom: 18px;
+  }
+  .cosmos-field > label {
+    font-size: 13px;
+  }
+  .cosmos-auth .cosmos-input input {
+    height: 49px;
+    min-height: 49px;
+    font-size: 13px;
+    padding-left: 47px;
+  }
+  .cosmos-input > svg {
+    left: 14px;
+    width: 21px;
+  }
+  .cosmos-auth .cosmos-password input {
+    padding-right: 44px;
+  }
+  .cosmos-password-toggle {
+    right: 7px;
+  }
+  .cosmos-auth .cosmos-submit {
+    min-height: 49px;
+    font-size: 14px;
+  }
+  .cosmos-account-switch {
+    font-size: 12px;
+    margin-top: 17px;
+  }
+  .cosmos-social {
+    margin-top: 22px;
+  }
+  .cosmos-separator {
+    font-size: 11px;
+    gap: 10px;
+  }
+  .cosmos-social-buttons {
+    gap: 7px;
+    margin-top: 15px;
+  }
+  .cosmos-social-buttons > button {
+    min-height: 44px;
+    font-size: 10px;
+    padding: 8px 4px;
+    gap: 7px;
+    border-radius: 9px;
+  }
+  .cosmos-google-mark {
+    font-size: 22px;
+  }
+  .cosmos-social-buttons svg {
+    width: 18px;
+  }
+  .cosmos-microsoft-mark {
+    width: 16px;
+    height: 16px;
+  }
+  .cosmos-social-status {
+    font-size: 9px;
+    margin-top: 11px;
+  }
+  .cosmos-terms {
+    font-size: 10px;
+    padding-top: 22px;
+  }
+  .cosmos-footer {
+    width: calc(100% - 40px);
+    padding: 0 0 19px;
+  }
+  .cosmos-footer > span:first-child {
+    font-size: 8px;
+    padding-left: 8px;
+  }
+  .cosmos-footer > span:last-child {
+    display: none;
+  }
+}
+@media (max-width: 360px) {
+  .cosmos-panel {
+    padding-left: 19px;
+    padding-right: 19px;
+  }
+  .cosmos-panel-heading h1 {
+    font-size: 28px;
+  }
+  .cosmos-social-buttons > button {
+    gap: 4px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cosmos-auth *,
+  .cosmos-auth *::before,
+  .cosmos-auth *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

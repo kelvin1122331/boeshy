@@ -15,7 +15,7 @@ const links = [
 export function PublicHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [homeDark, setHomeDark] = useState(false);
+  const [homeDark, setHomeDark] = useState(true);
   const isHome = pathname === "/";
   const { resolvedTheme, setTheme } = useTheme();
   return (

@@ -154,7 +154,6 @@ test("homepage search, theme and help controls work", async ({ page }) => {
   await expect(search.getByRole("status")).toHaveText(/Belum ada fitur/);
   await page.keyboard.press("Escape");
   await expect(search).not.toBeVisible();
-  await page.getByRole("button", { name: "Ganti tema", exact: true }).click();
   await expect(page.locator(".showcase-header")).toHaveAttribute(
     "data-home-theme",
     "dark",
@@ -163,6 +162,11 @@ test("homepage search, theme and help controls work", async ({ page }) => {
   await expect(page.locator(".showcase-header")).toHaveAttribute(
     "data-home-theme",
     "light",
+  );
+  await page.getByRole("button", { name: "Ganti tema", exact: true }).click();
+  await expect(page.locator(".showcase-header")).toHaveAttribute(
+    "data-home-theme",
+    "dark",
   );
   await page
     .getByRole("link", { name: "Butuh bantuan?", exact: false })

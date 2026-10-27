@@ -7,7 +7,9 @@ export default function Page() {
       <AuthForm
         mode="login"
         emailConfigured={!!process.env.RESEND_API_KEY}
-        googleConfigured={!!process.env.GOOGLE_CLIENT_ID}
+        googleConfigured={
+          !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)
+        }
       />
     </Suspense>
   );

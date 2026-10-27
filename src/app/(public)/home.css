@@ -633,13 +633,17 @@
   .showcase-hero-visual::after {
   background: linear-gradient(90deg, #112039 0%, #112039d9 25%, #11203900 52%);
 }
-.marketing-site:has(.showcase-header[data-home-theme="dark"]) .showcase-hero h1 {
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  .showcase-hero
+  h1 {
   color: #eff5ff;
 }
 .marketing-site:has(.showcase-header[data-home-theme="dark"])
   .showcase-hero-copy
   > p,
-.marketing-site:has(.showcase-header[data-home-theme="dark"]) .showcase-stats dd {
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  .showcase-stats
+  dd {
   color: #bdcce3;
 }
 .marketing-site:has(.showcase-header[data-home-theme="dark"]) .showcase-badge {
@@ -699,7 +703,8 @@
   > a:hover {
   background: #233956;
 }
-.marketing-site:has(.showcase-header[data-home-theme="dark"]) .showcase-eyebrow {
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  .showcase-eyebrow {
   color: #8bb6ff;
 }
 @media (min-width: 1600px) {
@@ -1221,5 +1226,93 @@
 @media (prefers-reduced-motion: reduce) {
   .showcase-home * {
     transition: none !important;
+  }
+}
+
+/* Orbital scene: dark by default, with the existing light switch preserved. */
+.marketing-site:has(.showcase-header[data-home-theme="dark"]) .showcase-home {
+  background:
+    linear-gradient(#06102075, #020916df),
+    url("/marketing/holyai-orbit-auth.webp") center / cover fixed;
+}
+.showcase-header[data-home-theme="dark"] {
+  background: linear-gradient(110deg, #030b18f5, #0b1b30e8 75%, #061020f5);
+}
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  .showcase-hero-visual {
+  filter: none;
+}
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  .showcase-hero-visual::after {
+  background:
+    linear-gradient(90deg, #020a18eb 0%, #030b19b5 24%, #020a1700 48%),
+    linear-gradient(180deg, transparent 75%, #040d1b70);
+}
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  .showcase-hero
+  h1
+  > span {
+  color: #36bfff;
+  background: linear-gradient(100deg, #2fc9f7, #307eff);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.marketing-site:has(.showcase-header[data-home-theme="dark"]) .showcase-badge {
+  border-color: #367ab4;
+  background: #09213bc9;
+  color: #d5edff;
+}
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  .showcase-badge
+  > svg {
+  color: #57cfff;
+}
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  .showcase-stats
+  > div {
+  border-left-color: #3c5874;
+}
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  .showcase-hero-visual
+  figcaption {
+  background: #06172cba;
+  color: #a9c9e9;
+}
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  :is(
+    .showcase-quick-tools,
+    .showcase-featured-cards,
+    .showcase-integrations,
+    .showcase-benefits > a
+  ) {
+  background: linear-gradient(125deg, #10233bcf, #071629de);
+  border-color: #42678b66;
+  box-shadow:
+    inset 0 1px 0 #6ccaff0a,
+    0 8px 28px #0002;
+  backdrop-filter: blur(12px);
+}
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  .showcase-integrations
+  > div:first-child
+  > span {
+  color: #9eb9d6;
+}
+@media (max-width: 900px) {
+  .marketing-site:has(.showcase-header[data-home-theme="dark"])
+    .showcase-hero-inner {
+    background:
+      linear-gradient(#030e20e8, #061326d9),
+      url("/marketing/holyai-orbit-auth.webp") left center / auto 100%;
+  }
+  .marketing-site:has(.showcase-header[data-home-theme="dark"])
+    .showcase-hero-visual::after {
+    background: linear-gradient(
+      180deg,
+      #07172a 0%,
+      #07172a00 24%,
+      #030c1900 84%,
+      #030c1966
+    );
   }
 }

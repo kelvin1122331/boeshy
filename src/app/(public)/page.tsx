@@ -140,8 +140,8 @@ export default function Home() {
       <section className="showcase-hero" aria-labelledby="home-title">
         <figure className="showcase-hero-visual">
           <Image
-            src="/marketing/holyai-workspace-hero.webp"
-            alt="Ilustrasi laptop dengan workspace HOLYAI dan panda berkacamata biru di meja kerja."
+            src="/marketing/holyai-orbit-home.webp"
+            alt="Ilustrasi workspace HOLYAI dan panda berkacamata biru di stasiun luar angkasa dengan pemandangan bumi."
             fill
             preload
             sizes="100vw"

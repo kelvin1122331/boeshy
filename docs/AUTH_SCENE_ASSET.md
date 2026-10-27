@@ -1,0 +1,14 @@
+# Authentication scene asset
+
+The space scene is a background illustration. Header links, form labels and inputs, status feedback, password controls, provider buttons, and submit actions are real HTML. Login, signup and password recovery keep their existing Better Auth handlers. Microsoft and Apple are visibly unavailable; Google is enabled only when both server credentials exist.
+
+- Asset: `public/marketing/holyai-orbit-auth.webp`.
+- Generation: built-in imagegen with the user's authentication reference image.
+- Delivery: WebP conversion for web use, preserving the generated composition.
+- Login uses email and password; registration adds the full name field shown in the reference. Recovery pages share the same scene.
+- Successful email signup and login perform a fresh navigation to the dashboard, ensuring the server reads the new session instead of a cached anonymous route response.
+
+## Final generation prompt
+
+Use case: ads-marketing / cinematic environment illustration. Asset type: full-bleed background for HOLYAI login and registration website, 3:2 landscape composition, 1536x1024. Input image is a visual REFERENCE for the scene and composition, not a website to flatten. Create ONLY the dramatic photorealistic science-fiction background scene: the viewer is inside a dark detailed orbital space station observation deck, blue electric light strips along ceiling beams at top left and along the metallic floor. A huge curved blue Earth with golden city lights occupies the middle left and lower middle, with a brilliant sunrise just above its horizon near image center. A small dark moon above Earth's horizon near center. A lone detailed astronaut with backpack sits in the lower middle foreground looking out toward Earth, facing away, approximately at 43 percent image width and 72 percent image height. Intricate spaceship window frame and structural beams around the far left and upper left; detailed metallic floor extending across the bottom. Deep dark starry space on the right, a softly glowing blue ringed planet in the upper right corner behind where a web form will be placed. Match the reference's near-black navy shadows, luminous cyan and electric blue accents, beautiful Earth atmosphere, cinematic high contrast, realistic textures and premium science fiction realism. Left-middle 6% to 37% width must have a dark low-detail area over the station and Earth for readable white live HTML headline. Rightmost 40% should be mostly dark quiet space suitable behind a translucent web form. Maintain a continuous natural scene across the entire image. IMPORTANT: REMOVE ALL website elements: absolutely no header, logos, navigation, words, typography, icons, cards, form fields, panels, buttons, borders, UI, footer, quotes, or watermarks. Do not render a screenshot or a web page. Background illustration only.
+
