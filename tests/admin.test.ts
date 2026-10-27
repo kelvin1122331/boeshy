@@ -13,8 +13,17 @@ import {
 import { probeProvider } from "@/server/admin/provider-tests";
 import { totp } from "@/server/admin/mfa";
 import { providers } from "@/config/providers";
-import { callTextRoute } from "@/lib/ai/provider";
+import { callTextRoute, providerRequestError } from "@/lib/ai/provider";
 vi.mock("@/server/admin/access", () => ({ auditAdmin: vi.fn() }));
+test("provider errors distinguish missing models, credentials and quota without upstream bodies", () => {
+  expect(providerRequestError(404).message).toContain(
+    "Model AI yang dipilih tidak tersedia",
+  );
+  expect(providerRequestError(401).status).toBe(503);
+  expect(providerRequestError(403).message).toContain("kredensial");
+  expect(providerRequestError(429).status).toBe(429);
+  expect(providerRequestError(500).status).toBe(502);
+});
 beforeEach(() => vi.stubEnv("CREDENTIAL_ENCRYPTION_KEY", "12".repeat(32)));
 afterEach(() => vi.unstubAllEnvs());
 describe("credential protection", () => {
@@ -144,19 +153,17 @@ test("Gemini adapter accepts only complete responses and sends schema/timeout wi
     identifier: "test-model",
     provider: config,
   } as unknown as Parameters<typeof callTextRoute>[0];
-  const fetcher = vi
-    .fn()
-    .mockResolvedValue(
-      Response.json({
-        candidates: [
-          {
-            finishReason: "STOP",
-            content: { parts: [{ text: '{"answer":42}' }] },
-          },
-        ],
-        usageMetadata: { promptTokenCount: 3, candidatesTokenCount: 4 },
-      }),
-    );
+  const fetcher = vi.fn().mockResolvedValue(
+    Response.json({
+      candidates: [
+        {
+          finishReason: "STOP",
+          content: { parts: [{ text: '{"answer":42}' }] },
+        },
+      ],
+      usageMetadata: { promptTokenCount: 3, candidatesTokenCount: 4 },
+    }),
+  );
   expect(
     await callTextRoute(
       route,

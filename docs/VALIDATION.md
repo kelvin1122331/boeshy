@@ -55,3 +55,9 @@ The public homepage was shortened and the full capability catalogue, workflow ex
 ## Admin Control Center revision
 
 Local validation on 2026-10-27: production Next.js build and strict type check passed; lint passed with two existing auth navigation warnings. All 27 unit/infrastructure checks passed, including real Redis/worker reminders. The full 12-test browser suite passed; after the final admin/workspace changes the three targeted admin/workspace checks passed again. Coverage includes all 26 admin routes, actual credential form submission, encrypted credential rotation/revocation, invalid endpoint rejection, provider disabling/dependency checks, role freshness, MFA replay/recovery, and mobile light/dark layouts. Temporary credentials were disabled throughout, deleted afterwards, and never sent to any provider. No external AI account, Supabase deployment or paid generation was tested.
+
+## Live provider verification — 2026-10-28
+
+The configured Gemini account returned a model listing successfully but generation with the assigned Gemini 2.5 Flash returned HTTP 404. A direct, short Gemini 3.5 Flash-Lite request succeeded; the local database model/feature routing was switched through the audited configuration services. Real HOLYAI text generation, schema-validated JSON, Tavily search, and the authenticated Chat endpoint with and without web search all completed successfully. Both test assistant messages were persisted as completed, then the exact temporary test account was deleted. OpenAI's configured key returned HTTP 401; no OpenAI generation or image/video access is claimed. Credential values were not printed, committed or included in the source archive.
+
+The app now distinguishes unavailable-model, credential/access, quota and upstream-service failures using fixed safe messages. HTTP 404 from a model endpoint requires selecting a usable model; a successful model-list probe alone does not establish generation access.

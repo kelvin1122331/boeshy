@@ -146,6 +146,27 @@ export type TextResult = {
   inputTokens: number;
   outputTokens: number;
 };
+export function providerRequestError(status: number) {
+  if (status === 404)
+    return new AppError(
+      503,
+      "Model AI yang dipilih tidak tersedia untuk akun ini. Administrator perlu memilih model lain.",
+    );
+  if (status === 401 || status === 403)
+    return new AppError(
+      503,
+      "Provider menolak kredensial atau izin akses. Administrator perlu memeriksa API key dan akses model.",
+    );
+  if (status === 429)
+    return new AppError(
+      429,
+      "Kuota atau batas permintaan provider tercapai. Periksa kuota akun provider sebelum mencoba lagi.",
+    );
+  return new AppError(
+    status >= 500 ? 502 : 400,
+    "Provider AI menolak atau belum dapat menyelesaikan permintaan.",
+  );
+}
 export async function callTextRoute(
   route: ModelRoute,
   instruction: string,
@@ -245,11 +266,7 @@ export async function callTextRoute(
           : AbortSignal.timeout(route.provider.timeoutMs),
       },
     );
-    if (!response.ok)
-      throw new AppError(
-        response.status === 429 ? 429 : response.status >= 500 ? 502 : 400,
-        "Provider AI menolak atau belum dapat menyelesaikan permintaan.",
-      );
+    if (!response.ok) throw providerRequestError(response.status);
     const data = await response.json();
     const candidate = data.candidates?.[0];
     const text =
