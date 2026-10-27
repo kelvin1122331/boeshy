@@ -396,40 +396,9 @@
   padding: 9px 17px;
   border-radius: 11px;
 }
-.showcase-featured-cards {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 10px;
-  padding: 12px;
-  border: 1px solid #fff;
-  border-radius: 22px;
-  background: #ffffffa6;
-  box-shadow: 0 7px 24px #789cc70c;
-}
-.showcase-feature-card {
-  overflow: hidden;
-  border: 1px solid #edf2fa;
-  border-radius: 13px;
-  background: #ffffffb8;
-  box-shadow: 0 2px 3px #668bbd08;
-  transition:
-    transform 0.18s,
-    box-shadow 0.18s;
-}
-.showcase-feature-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px #416ba321;
-}
-.showcase-feature-art {
-  height: 85px;
-  background-image: url("/marketing/holyai-workspace-hero.webp");
-  background-repeat: no-repeat;
-  background-color: #162743;
-  border-radius: 11px 11px 0 0;
-}
 .showcase-art-panda {
   background-size: 647% auto;
-  background-position: 96% 44%;
+  background-position: 96% 55%;
 }
 .showcase-art-mountain {
   background-size: 1460% auto;
@@ -450,37 +419,6 @@
 .showcase-art-earth {
   background-size: 1904% auto;
   background-position: 75% 69%;
-}
-.showcase-feature-card-copy {
-  padding: 10px 10px 12px;
-  position: relative;
-  min-height: 88px;
-}
-.showcase-feature-card h3 {
-  color: #0c1934;
-  font-size: 11px;
-  line-height: 1.5;
-  font-weight: 650;
-  letter-spacing: -0.2px;
-}
-.showcase-feature-card p {
-  color: #4b5a75;
-  font-size: 10px;
-  line-height: 1.5;
-  margin-top: 4px;
-  padding-right: 18px;
-}
-.showcase-card-arrow {
-  position: absolute;
-  bottom: 10px;
-  right: 8px;
-  width: 25px;
-  height: 25px;
-  display: grid;
-  place-items: center;
-  background: #eaf0f8;
-  color: #223b66;
-  border-radius: 50%;
 }
 .showcase-bottom-row {
   display: grid;
@@ -735,17 +673,6 @@
   .showcase-featured-intro h2 {
     font-size: 23px;
   }
-  .showcase-featured-cards {
-    gap: 8px;
-    padding: 10px;
-  }
-  .showcase-feature-card-copy {
-    padding: 10px 8px;
-    min-height: 100px;
-  }
-  .showcase-feature-card p {
-    padding-right: 10px;
-  }
   .showcase-bottom-row {
     grid-template-columns: 1fr 1fr;
   }
@@ -799,18 +726,6 @@
   }
   .showcase-featured {
     grid-template-columns: 235px minmax(0, 1fr);
-  }
-  .showcase-featured-cards {
-    display: flex;
-    overflow-x: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #cbdaf2 transparent;
-  }
-  .showcase-feature-card {
-    flex: 0 0 150px;
-  }
-  .showcase-feature-card-copy {
-    min-height: 91px;
   }
   .showcase-bottom-row {
     grid-template-columns: 1fr;
@@ -995,23 +910,6 @@
     min-height: 42px;
     margin-top: 15px;
   }
-  .showcase-feature-card {
-    flex-basis: 180px;
-  }
-  .showcase-feature-art {
-    height: 104px;
-  }
-  .showcase-feature-card-copy {
-    min-height: 94px;
-    padding: 12px;
-  }
-  .showcase-feature-card h3 {
-    font-size: 13px;
-  }
-  .showcase-feature-card p {
-    font-size: 11px;
-    padding-right: 20px;
-  }
   .showcase-bottom-row {
     margin-top: 24px;
   }
@@ -1143,38 +1041,6 @@
   }
   .showcase-featured-intro > p {
     font-size: 12px;
-  }
-  .showcase-featured-cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    overflow: visible;
-    gap: 10px;
-    padding: 10px;
-    border-radius: 18px;
-  }
-  .showcase-feature-card {
-    min-width: 0;
-  }
-  .showcase-feature-art {
-    height: 88px;
-  }
-  .showcase-feature-card-copy {
-    min-height: 104px;
-    padding: 11px 10px;
-  }
-  .showcase-feature-card h3 {
-    font-size: 12px;
-  }
-  .showcase-feature-card p {
-    font-size: 10px;
-    line-height: 1.5;
-    padding-right: 8px;
-  }
-  .showcase-card-arrow {
-    bottom: 9px;
-    right: 8px;
-    width: 23px;
-    height: 23px;
   }
   .showcase-integrations {
     padding: 15px;
@@ -1314,5 +1180,177 @@
       #030c1900 84%,
       #030c1966
     );
+  }
+}
+
+/* Feature cards share a stable image, copy and action layout at every width. */
+.showcase-featured-cards {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #e1eafa;
+  border-radius: 22px;
+  background: #ffffffa6;
+}
+.showcase-feature-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid #dce6f4;
+  border-radius: 14px;
+  background: #fff;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s;
+}
+.showcase-feature-card:hover {
+  border-color: #72acfb;
+  box-shadow: 0 6px 20px #247bdf1f;
+}
+.showcase-feature-art {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  flex-shrink: 0;
+  background-image: url("/marketing/holyai-workspace-hero.webp");
+  background-repeat: no-repeat;
+  background-color: #162743;
+  border-bottom: 1px solid #dce6f4;
+}
+.showcase-feature-card-copy {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 14px 12px 12px;
+  min-height: 164px;
+}
+.showcase-feature-card h3 {
+  color: #10213b;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.45;
+  letter-spacing: -0.15px;
+}
+.showcase-feature-card p {
+  color: #53627b;
+  font-size: 12px;
+  line-height: 1.65;
+  margin: 8px 0 16px;
+  padding: 0;
+}
+.showcase-card-arrow {
+  display: grid;
+  place-items: center;
+  align-self: flex-end;
+  flex-shrink: 0;
+  width: 29px;
+  height: 29px;
+  margin-top: auto;
+  border: 1px solid #d4e3f8;
+  border-radius: 50%;
+  color: #2263b5;
+  background: #eaf2ff;
+  transition:
+    border-color 0.18s,
+    background 0.18s;
+}
+.showcase-feature-card:hover .showcase-card-arrow {
+  background: #dbeaff;
+  border-color: #7dafed;
+}
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  .showcase-feature-card {
+  background: linear-gradient(155deg, #152a43, #0b1a2c);
+  border-color: #2c4867;
+}
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  .showcase-feature-art {
+  border-bottom-color: #2c4867;
+}
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  .showcase-feature-card:hover {
+  border-color: #579bd2;
+  box-shadow: 0 6px 22px #0004;
+}
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  .showcase-card-arrow {
+  background: #173650;
+  border-color: #365e81;
+  color: #a2dfff;
+}
+.marketing-site:has(.showcase-header[data-home-theme="dark"])
+  .showcase-feature-card:hover
+  .showcase-card-arrow {
+  background: #204c70;
+  border-color: #69b4e8;
+}
+@media (max-width: 1400px) {
+  .showcase-featured-cards {
+    padding: 12px;
+    gap: 10px;
+  }
+}
+@media (max-width: 1200px) {
+  .showcase-featured {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .showcase-featured-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    padding: 16px;
+  }
+  .showcase-feature-card-copy {
+    min-height: 154px;
+    padding: 16px;
+  }
+  .showcase-feature-card h3 {
+    font-size: 15px;
+  }
+  .showcase-feature-card p {
+    font-size: 13px;
+  }
+}
+@media (max-width: 700px) {
+  .showcase-featured-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 12px;
+    border-radius: 19px;
+  }
+  .showcase-feature-card-copy {
+    min-height: 164px;
+    padding: 13px 12px 12px;
+  }
+  .showcase-feature-card h3 {
+    font-size: 13px;
+  }
+  .showcase-feature-card p {
+    font-size: 12px;
+    line-height: 1.65;
+  }
+}
+@media (max-width: 360px) {
+  .showcase-featured-cards {
+    grid-template-columns: 1fr;
+  }
+  .showcase-feature-card-copy {
+    min-height: 150px;
+    padding: 16px;
+  }
+  .showcase-feature-card h3 {
+    font-size: 15px;
+  }
+  .showcase-feature-card p {
+    font-size: 13px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .showcase-feature-card,
+  .showcase-card-arrow {
+    transition: none !important;
   }
 }
