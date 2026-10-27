@@ -70,6 +70,11 @@ export function useAPI<T>(path: string | null, refreshMs = 0) {
   return { data, setData, error, loading, reload };
 }
 export type Capabilities = {
+  canConfigureProviders?: boolean;
+  featureStatus?: Record<
+    string,
+    { enabled: boolean; ready: boolean; status: string }
+  >;
   text: boolean;
   image: boolean;
   video: boolean;

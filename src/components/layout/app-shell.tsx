@@ -1,4 +1,5 @@
 "use client";
+import { hasPermission } from "@/lib/permissions";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -20,7 +21,7 @@ export function AppShell({
   user,
 }: {
   children: React.ReactNode;
-  user: { name: string; email: string };
+  user: { name: string; email: string; role?: string };
 }) {
   const path = usePathname(),
     router = useRouter();
@@ -37,6 +38,9 @@ export function AppShell({
     "notifications",
     30000,
   );
+  const { data: featureAvailability } = useAPI<{
+    featureStatus: Record<string, { enabled: boolean }>;
+  }>("capabilities");
   const current = features.find((f) => path.startsWith(`/${f.id}`));
   const label =
     current?.name ||
@@ -159,6 +163,16 @@ export function AppShell({
           ))}
         </nav>
         <div className="sidebar-bottom">
+          {hasPermission(user.role || "user", "admin.read") && (
+            <Link
+              className="nav-link"
+              href="/admin/overview"
+              title="Admin Control Center"
+            >
+              <Icon name="ShieldCheck" size={18} />
+              <span>Admin Control Center</span>
+            </Link>
+          )}
           <Link
             className={`nav-link ${path.startsWith("/projects") ? "active" : ""}`}
             href="/projects"
@@ -273,7 +287,23 @@ export function AppShell({
           </div>
         </header>
         <main className="main-content" id="main-content">
-          {children}
+          {current &&
+          featureAvailability?.featureStatus[current.id]?.enabled === false ? (
+            <section className="panel">
+              <h1>Fitur sedang dinonaktifkan</h1>
+              <p>
+                Administrator menonaktifkan {current.name}. Karya yang sudah
+                disimpan tetap tersedia di Riwayat.
+              </p>
+              {hasPermission(user.role || "user", "features.write") && (
+                <Link className="btn btn-secondary" href="/admin/features">
+                  Buka Feature Management
+                </Link>
+              )}
+            </section>
+          ) : (
+            children
+          )}
         </main>
         <footer className="app-footer">
           <span>HOLYAI · One Intelligence. Endless Possibilities.</span>

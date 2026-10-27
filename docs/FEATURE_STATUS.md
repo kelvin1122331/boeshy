@@ -26,7 +26,7 @@ All 18 features have dedicated routes, validated requests, persistent output/his
 ## Shared boundaries
 
 - Accounts use Better Auth. Email verification/recovery require real mail delivery. Google login is optional and not exercised without credentials.
-- Admin sees users, jobs, usage and configuration flags. Provider secrets and default models are changed through deployment environment, not a database secret-editing UI. Role elevation is an administrator database operation.
+- [Admin Control Center](ADMIN_CONTROL_CENTER.md) manages encrypted provider credentials, model assignments, feature flags, quotas, roles, optional MFA and actual monitoring. Infrastructure secrets remain deployment-only. Initial Super Admin bootstrap requires a trusted operator; later role changes require Super Admin.
 - Uploads go through the authenticated server for validation; browser-direct signed uploads, antivirus scanning and full content-disarm/reconstruction are not implemented. Downloads use short-lived signed URLs. Limit: 10 MB/file and 200 MB/account; database and reverse-proxy limits must also be enforced in deployment.
 - PostgreSQL migrations include ownership indexes and cascades. Large-scale load, row-level security policies, distributed auth throttling and long-running-worker recovery under every crash condition have not been certified.
 - Task reminders are in-app notifications from the worker. They do not send email or push notifications.

@@ -21,6 +21,7 @@ jobs:
       APP_URL: http://127.0.0.1:3000
       BETTER_AUTH_URL: http://127.0.0.1:3000
       BETTER_AUTH_SECRET: ci-only-test-secret-please-never-use-in-production-123
+      CREDENTIAL_ENCRYPTION_KEY: '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
       REQUIRE_EMAIL_VERIFICATION: 'false'
       RUN_INFRA_TESTS: 'true'
       S3_ENDPOINT: http://127.0.0.1:9000

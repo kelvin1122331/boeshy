@@ -1,3 +1,5 @@
+import { db } from "@/lib/database";
+import { hasPermission } from "@/lib/permissions";
 import { headers } from "next/headers";
 import { auth } from "./index";
 import { AppError } from "@/lib/errors";
@@ -8,7 +10,17 @@ export async function requireUser() {
 }
 export async function requireAdmin() {
   const user = await requireUser();
-  if (user.role !== "admin")
+  if (
+    !hasPermission(
+      (
+        await db.user.findUnique({
+          where: { id: user.id },
+          select: { role: true },
+        })
+      )?.role || "user",
+      "providers.read",
+    )
+  )
     throw new AppError(403, "Akses administrator diperlukan.");
   return user;
 }

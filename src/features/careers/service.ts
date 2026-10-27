@@ -1,3 +1,5 @@
+import { resolveService } from "@/server/admin/router";
+import { rateLimit } from "@/lib/queue";
 import { z } from "zod";
 import { AppError } from "@/lib/errors";
 import { generateJSON } from "@/lib/ai/provider";
@@ -20,12 +22,73 @@ export async function careerMatch(
   profile: string,
   options: Record<string, string | number | boolean>,
 ) {
-  const r = await fetch("https://www.arbeitnow.com/api/job-board-api", {
-    signal: AbortSignal.timeout(20000),
+  const config = await resolveService("jobs");
+  await rateLimit("provider:" + config.id, config.requestLimit);
+  const settings = config.settings as {
+    defaultCountry?: string;
+    countries?: string[];
+    maxResults?: number;
+  };
+  const country = settings.defaultCountry || "gb";
+  if (
+    config.id === "adzuna" &&
+    (country === "id" ||
+      (settings.countries?.length && !settings.countries.includes(country)))
+  )
+    throw new AppError(
+      400,
+      "Wilayah belum didukung konfigurasi provider ini. Pilih sumber lain atau negara yang tercakup.",
+    );
+  const endpoint =
+    config.id === "adzuna"
+      ? config.endpoint +
+        "/jobs/" +
+        country +
+        "/search/1?" +
+        new URLSearchParams({
+          app_id: config.secrets.appId,
+          app_key: config.secrets.appKey,
+          results_per_page: String(Math.min(settings.maxResults || 20, 50)),
+          what: String(options.query || profile.slice(0, 100)),
+          ...(options.location ? { where: String(options.location) } : {}),
+        })
+      : config.endpoint + "/job-board-api";
+  const r = await fetch(endpoint, {
+    redirect: "error",
+    signal: AbortSignal.timeout(config.timeoutMs),
   });
   if (!r.ok) throw new AppError(502, "Sumber lowongan sedang tidak tersedia.");
+  const response = await r.json();
+  const normalized =
+    config.id === "adzuna"
+      ? {
+          data: z
+            .array(
+              z.object({
+                id: z.string(),
+                title: z.string(),
+                company: z.object({ display_name: z.string() }),
+                location: z.object({ display_name: z.string() }),
+                redirect_url: z.url(),
+                description: z.string(),
+                category: z.object({ label: z.string() }).optional(),
+              }),
+            )
+            .parse(response.results)
+            .map((job) => ({
+              slug: job.id,
+              title: job.title,
+              company_name: job.company.display_name,
+              location: job.location.display_name,
+              remote: false,
+              url: job.redirect_url,
+              tags: job.category ? [job.category.label] : [],
+              description: job.description,
+            })),
+        }
+      : response;
   const raw = jobsSchema
-    .parse(await r.json())
+    .parse(normalized)
     .data.filter(
       (j) =>
         (!options.remote || j.remote) &&
@@ -44,7 +107,9 @@ export async function careerMatch(
       title: "Kecocokan karier",
       summary: "Tidak ada lowongan yang memenuhi filter pada sumber ini.",
       jobs: [],
-      warnings: ["Sumber Arbeitnow tidak mencakup seluruh pasar kerja."],
+      warnings: [
+        "Sumber lowongan tidak mencakup seluruh pasar kerja dan wilayah.",
+      ],
     };
   const assessment = await generateJSON(
     userId,

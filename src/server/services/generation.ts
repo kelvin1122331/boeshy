@@ -1,3 +1,4 @@
+import { assertFeatureReady } from "@/server/admin/router";
 import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/database";
 import { materialContext } from "./files";
@@ -13,6 +14,7 @@ import { AppError } from "@/lib/errors";
 export async function runGeneration(id: string) {
   const job = await db.generationJob.findUniqueOrThrow({ where: { id } });
   if (job.status === "completed" || job.status === "cancelled") return;
+  await assertFeatureReady(job.kind);
   const input = inputSchema.parse(job.input);
   const stage = async (stage: string) => {
     await db.generationJob.update({
@@ -23,7 +25,7 @@ export async function runGeneration(id: string) {
   await stage("reading");
   if (job.kind === "image-generator") return generateImage(job, input);
   if (job.kind === "video-generator") return generateVideo(job, input);
-  let context = await materialContext(job.userId, input.fileIds);
+  let context = await materialContext(job.userId, input.fileIds, job.kind);
   if (job.kind === "journal-matrix" && input.fileIds.length < 2)
     throw new AppError(400, "Unggah setidaknya dua jurnal untuk dibandingkan.");
   if (context.length > 45000) {

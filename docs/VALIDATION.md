@@ -51,3 +51,7 @@ The public homepage was shortened and the full capability catalogue, workflow ex
 - No CI completion result is claimed merely because the workflow file exists. GitHub Actions must run after pushing.
 - Fixture questions and task records exist only in tests. The shipped UI has no seeded generated answers, citations, job postings, usage statistics or media assets.
 - Functional boundaries and unfinished advanced capabilities are itemized in FEATURE_STATUS.md. The full master prompt's production acceptance criteria are not all certified by this initial implementation.
+
+## Admin Control Center revision
+
+Local validation on 2026-10-27: production Next.js build and strict type check passed; lint passed with two existing auth navigation warnings. All 27 unit/infrastructure checks passed, including real Redis/worker reminders. The full 12-test browser suite passed; after the final admin/workspace changes the three targeted admin/workspace checks passed again. Coverage includes all 26 admin routes, actual credential form submission, encrypted credential rotation/revocation, invalid endpoint rejection, provider disabling/dependency checks, role freshness, MFA replay/recovery, and mobile light/dark layouts. Temporary credentials were disabled throughout, deleted afterwards, and never sent to any provider. No external AI account, Supabase deployment or paid generation was tested.

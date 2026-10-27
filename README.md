@@ -50,27 +50,26 @@ Beranda `/` memberikan pengantar ringkas. **Kemampuan** dan **Explore Features**
 - **Data:** PostgreSQL + Prisma dengan migrasi SQL, foreign keys, indeks ownership, dan UUID. Dokumen disimpan dalam `WorkspaceItem` dengan payload Zod sesuai domain dan versi immutable; percakapan, pesan, ujian, jawaban, tugas, file, jobs, aset, proyek, notifikasi, integrasi, dan penggunaan memiliki tabel tersendiri.
 - **Worker:** BullMQ + Redis. Video memakai create/poll provider dan hanya diselesaikan setelah file diunduh dan disimpan. Tidak ada progress persentase buatan.
 - **Penyimpanan:** S3-compatible bucket privat, nama objek acak, validasi ekstensi/MIME/signature, pemeriksaan ownership sebelum signed download 60 detik.
-- **AI:** adapter OpenAI dan Anthropic, prompt khusus domain, OpenAI JSON schema, validasi output Zod, pembatasan konteks/chunking, dan pencatatan penggunaan. Dokumen/sumber diperlakukan sebagai data tidak tepercaya.
+- **AI:** adapter Gemini, OpenAI dan Anthropic, prompt khusus domain, OpenAI JSON schema, validasi output Zod, pembatasan konteks/chunking, dan pencatatan penggunaan. Dokumen/sumber diperlakukan sebagai data tidak tepercaya.
 
 Lihat [rencana dan milestone](docs/ARCHITECTURE.md) untuk keputusan desain.
 
 ## Integrasi yang perlu dikonfigurasi
 
-| Integrasi | Environment / kebutuhan |
+| Integrasi | Konfigurasi / kebutuhan |
 |---|---|
-| Teks OpenAI | `OPENAI_API_KEY`, `OPENAI_TEXT_MODEL` |
-| Teks Anthropic | `ANTHROPIC_API_KEY`, `ANTHROPIC_TEXT_MODEL`, `TEXT_PROVIDER=anthropic` |
-| Gambar & video | OpenAI key, akses model, S3 dan Redis/worker |
-| Riset web | `TAVILY_API_KEY` dan provider teks |
+| Teks Gemini / OpenAI / Anthropic | API Credentials + Model Management + AI Routing di `/admin` |
+| Gambar & video | Provider + model di admin, akses model, S3 dan Redis/worker |
+| Riset web | Tavily / Brave di admin dan model teks |
 | Jurnal | Crossref publik, tanpa API key |
 | Lowongan | Arbeitnow publik + provider teks untuk pencocokan |
 | Email akun | `RESEND_API_KEY`, `EMAIL_FROM`, domain pengirim terverifikasi |
 | Google login | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`; callback `/api/auth/callback/google` |
-| Canva | OAuth client, redirect `/api/integrations/canva/callback`, dan `TOKEN_ENCRYPTION_KEY` 64 hex |
+| Canva | OAuth client di admin, redirect `/api/integrations/canva/callback`, dan `TOKEN_ENCRYPTION_KEY` 64 hex |
 | File privat | `S3_ENDPOINT` opsional, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` |
 | Antrean | `REDIS_URL`, proses `npm run worker` yang berjalan terus |
 
-Provider dan model dapat diubah lewat environment. Kapabilitas yang ditampilkan adalah kapabilitas adapter, bukan jaminan bahwa akun provider memiliki akses model. Pengaturan menampilkan **Requires Configuration** bila environment yang diperlukan belum ada. Secret tidak diinput pengguna biasa atau dikirim ke client.
+Provider, kredensial terenkripsi, model, routing, dan seluruh fitur dikelola lewat **[Admin Control Center](docs/ADMIN_CONTROL_CENTER.md)** di `/admin`. Infrastruktur tetap memakai environment server. Kapabilitas adapter bukan jaminan akses model di akun provider. Pengguna biasa tidak dapat mengelola atau membaca secret; fitur yang dependensinya belum tersedia menampilkan Configuration Required.
 
 ## Perintah
 

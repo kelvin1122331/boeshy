@@ -5,7 +5,7 @@
 1. Provision PostgreSQL 17 with TLS, Redis 7 with persistence/TLS, and a private S3-compatible bucket. Use distinct credentials and network access rules. Do not expose Compose development ports publicly.
 2. Configure all environment values from `.env.example` through your host's secret manager. Set `APP_URL` and `BETTER_AUTH_URL` to the same canonical HTTPS origin. Use a strong random authentication secret and a different 32-byte encryption key for Canva tokens. Keys must never have a `NEXT_PUBLIC_` prefix.
 3. Install Node.js 24 LTS dependencies with `npm ci`. Run `npm run db:migrate` in a release job before starting the new app. Run `npm run build`.
-4. Start `npm start` as the web process and `npm run worker` as a separate supervised process. Both need database, Redis, provider and storage environment values. Preserve the `public/fonts` directory for PDF export. The worker requires source files, `tsx`, and dependencies; do not prune dev dependencies from a worker image without building an equivalent compiled worker artifact.
+4. Start `npm start` as the web process and `npm run worker` as a separate supervised process. Both need database, Redis, storage and matching server encryption environment values. Provider credentials and model assignments are stored through the encrypted Admin Control Center. Preserve the `public/fonts` directory for PDF export. The worker requires source files, `tsx`, and dependencies; do not prune dev dependencies from a worker image without building an equivalent compiled worker artifact.
 5. Place a TLS reverse proxy/load balancer in front of Next.js. Stream `/api/chat` without buffering and permit a two-minute stream. Enforce upload body limits of approximately 11 MB, reasonable request timeouts and request-rate limits at the edge.
 6. Enable Resend with a verified sending domain. Keep `REQUIRE_EMAIL_VERIFICATION=true` in production. Configure Google login callbacks only when using Google OAuth.
 7. Configure Canva redirect URL exactly and grant only the scopes used by import/export. Test with the actual account/package. A valid PKCE exchange does not establish permission to every Canva API.
@@ -15,7 +15,7 @@
 Register and verify a normal account. Using a privileged database console, promote the intended account:
 
 ```sql
-UPDATE "User" SET role = 'admin' WHERE email = 'your-verified-email@example.com';
+UPDATE "User" SET role = 'super_admin' WHERE email = 'your-verified-email@example.com';
 ```
 
 Only trusted operators should have database access. Ordinary users cannot change role through the auth API. The admin screen does not expose API secrets.
@@ -41,7 +41,7 @@ Monitor app/worker liveness, database connectivity, queue age, failed jobs, prov
 
 BullMQ provides worker leases/stall detection. A provider create request can be uncertain during a network failure. Do not automatically retry a chargeable media creation without checking the provider dashboard/job ID. Video polling uses persisted provider IDs so normal polls do not create another video. Failed jobs are visible; the user may submit a new attempt.
 
-Current monthly limits count provider calls, including document chunks. Requests are not a price quote. Billing reconciliation, organizational tenancy, payment plans and provider-cost accounting are outside this release.
+Current monthly limits count provider calls, including document chunks. Requests are not a price quote. Billing reconciliation, organizational tenancy, payment plans and actual invoice reconciliation are outside this release. Configured token prices produce estimates only. See [Admin Control Center](ADMIN_CONTROL_CENTER.md) for the current adapter matrix, MFA, limits, key handling and Supabase migration boundaries.
 
 ## Release checklist
 

@@ -104,7 +104,11 @@ export async function extractDocument(bytes: Buffer, mime: string) {
     warning: null,
   };
 }
-export async function materialContext(userId: string, fileIds: string[]) {
+export async function materialContext(
+  userId: string,
+  fileIds: string[],
+  feature = "notes-summarizer",
+) {
   const files = await db.projectFile.findMany({
     where: { id: { in: fileIds }, userId },
   });
@@ -117,36 +121,13 @@ export async function materialContext(userId: string, fileIds: string[]) {
   for (const f of files) {
     let text = f.text;
     if (f.mime.startsWith("image/")) {
-      const { openai, safety, checkQuota } = await import("@/lib/ai/provider");
-      await checkQuota(userId);
-      const bytes = await getFile(f.key);
-      const r = await openai().responses.create({
-        model: process.env.OPENAI_TEXT_MODEL || "gpt-4.1-mini",
-        instructions: `${safety} Transcribe and describe only the visible study/document content. Mark uncertain OCR.`,
-        input: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "input_image",
-                image_url: `data:${f.mime};base64,${bytes.toString("base64")}`,
-                detail: "auto",
-              },
-            ],
-          },
-        ],
-        store: false,
-      });
-      text = r.output_text;
-      await db.usageRecord.create({
-        data: {
-          userId,
-          feature: "vision",
-          provider: "openai",
-          inputTokens: r.usage?.input_tokens || 0,
-          outputTokens: r.usage?.output_tokens || 0,
-        },
-      });
+      const { generateVision } = await import("@/lib/ai/provider");
+      text = await generateVision(
+        userId,
+        feature,
+        f.mime,
+        await getFile(f.key),
+      );
     }
     if (!text.trim())
       throw new AppError(

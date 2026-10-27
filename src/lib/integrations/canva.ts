@@ -1,3 +1,4 @@
+import { oauthApplication } from "@/server/admin/oauth";
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 import { db } from "@/lib/database";
 import { AppError } from "@/lib/errors";
@@ -39,8 +40,9 @@ export function decryptTokens(raw: string) {
   );
 }
 export async function exchangeToken(params: Record<string, string>) {
+  const application = await oauthApplication("canva");
   const auth = Buffer.from(
-    `${process.env.CANVA_CLIENT_ID}:${process.env.CANVA_CLIENT_SECRET}`,
+    application.clientId + ":" + application.clientSecret,
   ).toString("base64");
   const r = await fetch("https://api.canva.com/rest/v1/oauth/token", {
     method: "POST",
@@ -77,6 +79,7 @@ export async function canvaRequest(
   path: string,
   body?: unknown,
 ) {
+  await oauthApplication("canva");
   const account = await db.integrationAccount.findUnique({
     where: { userId_provider: { userId, provider: "canva" } },
   });

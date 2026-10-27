@@ -288,9 +288,10 @@ export function Chat({ conversationId }: { conversationId?: string }) {
           {error && <Alert error>{error}</Alert>}
           {caps && !caps.text && (
             <Alert>
-              Requires Configuration. Hubungkan provider AI di{" "}
-              <Link href="/settings/integrations">pengaturan server</Link> untuk
-              memulai chat.
+              AI provider belum dikonfigurasi. Hubungi administrator.{" "}
+              {caps.canConfigureProviders && (
+                <Link href="/admin/ai-providers">Configure Provider →</Link>
+              )}
             </Alert>
           )}
           <div className="composer-box">

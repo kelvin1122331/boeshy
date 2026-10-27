@@ -1,3 +1,4 @@
+import { oauthApplication } from "@/server/admin/oauth";
 import { createHash, randomBytes } from "node:crypto";
 import { z } from "zod";
 import { requireUser, assertOrigin } from "@/lib/auth/guard";
@@ -16,15 +17,16 @@ type Context = { params: Promise<{ action: string }> };
 export async function GET(request: Request, context: Context) {
   try {
     const user = await requireUser();
-    if (!capabilities().canva)
+    if (!(await capabilities()).canva)
       throw new AppError(
         503,
         "Requires Configuration: atur kredensial OAuth Canva dan kunci enkripsi token.",
       );
     const { action } = await context.params;
     const url = new URL(request.url);
+    const app = await oauthApplication("canva");
     if (action === "connect") {
-      const state = randomBytes(32).toString("hex"),
+      const state = "canva_" + randomBytes(32).toString("hex"),
         verifier = randomBytes(48).toString("base64url");
       await db.oAuthState.create({
         data: {
@@ -36,11 +38,10 @@ export async function GET(request: Request, context: Context) {
       });
       const target = new URL("https://www.canva.com/api/oauth/authorize");
       target.search = new URLSearchParams({
-        client_id: process.env.CANVA_CLIENT_ID!,
-        redirect_uri: process.env.CANVA_REDIRECT_URI!,
+        client_id: app.clientId,
+        redirect_uri: app.redirectUri,
         response_type: "code",
-        scope:
-          "design:content:read design:content:write design:meta:read asset:read asset:write",
+        scope: app.scopes.join(" "),
         state,
         code_challenge: createHash("sha256")
           .update(verifier)
@@ -51,6 +52,8 @@ export async function GET(request: Request, context: Context) {
     }
     if (action === "callback") {
       const state = url.searchParams.get("state") || "";
+      if (!state.startsWith("canva_"))
+        throw new AppError(400, "State OAuth tidak valid.");
       const stored = await db.oAuthState.findFirst({
         where: { id: state, userId: user.id, expiresAt: { gt: new Date() } },
       });
@@ -68,7 +71,7 @@ export async function GET(request: Request, context: Context) {
         grant_type: "authorization_code",
         code: url.searchParams.get("code")!,
         code_verifier: stored.verifier,
-        redirect_uri: process.env.CANVA_REDIRECT_URI!,
+        redirect_uri: app.redirectUri,
       });
       await saveCanvaTokens(user.id, tokens);
       return Response.redirect(

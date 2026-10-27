@@ -1,3 +1,4 @@
+import { setting } from "@/server/admin/configuration";
 import "dotenv/config";
 import { Worker } from "bullmq";
 import { connection, jobsQueue, ensureRedis } from "@/lib/queue";
@@ -37,6 +38,11 @@ const worker = new Worker(
       await db.verification.deleteMany({
         where: { expiresAt: { lt: new Date() } },
       });
+      const limits = await setting("limits", { maxConcurrentJobs: 3 });
+      worker.concurrency = Math.max(1, Math.min(20, limits.maxConcurrentJobs));
+      await db.adminMfaGrant.deleteMany({
+        where: { expiresAt: { lt: new Date() } },
+      });
       return;
     }
     const id = String(queueJob.data.id);
@@ -50,6 +56,22 @@ const worker = new Worker(
         );
     } catch (error) {
       const e = publicError(error);
+      const snapshot = await db.generationJob.findUnique({
+        where: { id },
+        select: { result: true, kind: true },
+      });
+      const usageId = (snapshot?.result as { usageId?: string } | null)
+        ?.usageId;
+      if (usageId)
+        await db.usageRecord.updateMany({
+          where: { id: usageId, status: "pending" },
+          data: { status: "failed", errorCode: "GENERATION_FAILED" },
+        });
+      if (snapshot)
+        await db.featureConfiguration.updateMany({
+          where: { id: snapshot.kind },
+          data: { lastError: e.message },
+        });
       await db.generationJob.update({
         where: { id },
         data: { status: "failed", stage: "failed", error: e.message },

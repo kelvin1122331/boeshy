@@ -1,5 +1,6 @@
+import { resolveModel, resolveStoredModel } from "@/server/admin/router";
 import type { GenerationJob } from "@prisma/client";
-import { openai, reserveUsage } from "@/lib/ai/provider";
+import { openaiFor, reserveUsage } from "@/lib/ai/provider";
 import { db } from "@/lib/database";
 import { putFile } from "@/lib/storage";
 import type { GenerationInput } from "@/lib/validation/schemas";
@@ -18,12 +19,19 @@ async function finishAsset(
       create: { jobId: job.id, key, mime },
       update: {},
     });
+    const snapshot = await tx.generationJob.findUnique({
+      where: { id: job.id },
+      select: { result: true },
+    });
     await tx.generationJob.update({
       where: { id: job.id },
       data: {
         status: "completed",
         stage: "completed",
-        result: { title: (job.input as { prompt: string }).prompt },
+        result: {
+          ...((snapshot?.result as Record<string, string>) || {}),
+          title: (job.input as { prompt: string }).prompt,
+        },
       },
     });
     await tx.notification.create({
@@ -49,9 +57,25 @@ export async function generateImage(
   };
   const size = sizes[String(input.options.ratio || "1:1")];
   if (!size) throw new AppError(400, "Rasio gambar tidak didukung model ini.");
-  await reserveUsage(job.userId, job.kind, "openai");
-  const r = await openai().images.generate({
-    model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1",
+  const { route } = await resolveModel(job.kind, undefined, "image");
+  const allowed = (route.settings as { imageRatios?: string[] }).imageRatios;
+  if (
+    allowed?.length &&
+    !allowed.includes(String(input.options.ratio || "1:1"))
+  )
+    throw new AppError(400, "Rasio tidak didukung model pilihan.");
+  const usage = await reserveUsage(
+    job.userId,
+    job.kind,
+    route.providerId,
+    route.identifier,
+  );
+  await db.generationJob.update({
+    where: { id: job.id },
+    data: { result: { usageId: usage.id, modelId: route.id } },
+  });
+  const r = await openaiFor(route).images.generate({
+    model: route.identifier,
     prompt: `${input.prompt}\nStyle: ${input.options.style || "Photorealistic"}`,
     size,
     n: 1,
@@ -60,20 +84,51 @@ export async function generateImage(
   if (!data)
     throw new AppError(502, "Provider belum mengembalikan file gambar.");
   await finishAsset(job, Buffer.from(data, "base64"), "image/png", "png");
+  await db.usageRecord.update({
+    where: { id: usage.id },
+    data: { status: "completed" },
+  });
 }
 export async function generateVideo(
   job: GenerationJob,
   input: GenerationInput,
 ) {
-  const client = openai();
+  const savedModel = (job.result as { modelId?: string } | null)?.modelId;
+  const route =
+    job.providerId && savedModel
+      ? await resolveStoredModel(savedModel, "video")
+      : (await resolveModel(job.kind, undefined, "video")).route;
+  const client = openaiFor(route);
   let providerId = job.providerId;
   if (!providerId) {
     const duration = Number(input.options.duration || 4);
-    if (![4, 8, 12].includes(duration))
+    const options = route.settings as {
+      videoDurations?: number[];
+      videoRatios?: string[];
+    };
+    if (
+      options.videoRatios?.length &&
+      !options.videoRatios.includes(String(input.options.ratio || "16:9"))
+    )
+      throw new AppError(400, "Rasio tidak didukung model video pilihan.");
+    if (
+      !(
+        options.videoDurations?.length ? options.videoDurations : [4, 8, 12]
+      ).includes(duration)
+    )
       throw new AppError(400, "Durasi tidak didukung.");
-    await reserveUsage(job.userId, job.kind, "openai");
+    const usage = await reserveUsage(
+      job.userId,
+      job.kind,
+      route.providerId,
+      route.identifier,
+    );
+    await db.generationJob.update({
+      where: { id: job.id },
+      data: { result: { usageId: usage.id, modelId: route.id } },
+    });
     const r = await client.videos.create({
-      model: process.env.OPENAI_VIDEO_MODEL || "sora-2",
+      model: route.identifier,
       prompt: input.prompt,
       seconds: String(duration) as "4" | "8" | "12",
       size: input.options.ratio === "9:16" ? "720x1280" : "1280x720",
@@ -99,5 +154,15 @@ export async function generateVideo(
     "video/mp4",
     "mp4",
   );
+  const state = await db.generationJob.findUnique({
+    where: { id: job.id },
+    select: { result: true },
+  });
+  const usageId = (state?.result as { usageId?: string } | null)?.usageId;
+  if (usageId)
+    await db.usageRecord.update({
+      where: { id: usageId },
+      data: { status: "completed" },
+    });
   return { pending: false };
 }

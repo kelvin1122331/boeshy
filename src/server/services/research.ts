@@ -1,3 +1,5 @@
+import { resolveService } from "@/server/admin/router";
+import { rateLimit } from "@/lib/queue";
 import { z } from "zod";
 import { AppError } from "@/lib/errors";
 import { generateJSON } from "@/lib/ai/provider";
@@ -16,30 +18,58 @@ export async function searchWeb(
   query: string,
   options: Record<string, string | number | boolean> = {},
 ) {
-  if (!process.env.TAVILY_API_KEY)
-    throw new AppError(
-      503,
-      "Requires Configuration: atur TAVILY_API_KEY untuk pencarian web.",
-    );
-  const r = await fetch("https://api.tavily.com/search", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.TAVILY_API_KEY}`,
+  const config = await resolveService("search");
+  await rateLimit("provider:" + config.id, config.requestLimit);
+  const settings = config.settings as { maxResults?: number };
+  const r = await fetch(
+    config.id === "brave"
+      ? config.endpoint +
+          "/web/search?" +
+          new URLSearchParams({
+            q: query,
+            count: String(Math.min(settings.maxResults || 10, 20)),
+          })
+      : config.endpoint + "/search",
+    {
+      method: config.id === "brave" ? "GET" : "POST",
+      redirect: "error",
+      headers:
+        config.id === "brave"
+          ? { "X-Subscription-Token": config.secrets.apiKey }
+          : {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + config.secrets.apiKey,
+            },
+      body:
+        config.id === "brave"
+          ? undefined
+          : JSON.stringify({
+              query,
+              search_depth: "advanced",
+              max_results: Math.min(settings.maxResults || 10, 20),
+              topic: options.focus === "Berita" ? "news" : "general",
+              ...(options.from ? { start_date: options.from } : {}),
+              ...(options.to ? { end_date: options.to } : {}),
+            }),
+      signal: AbortSignal.timeout(config.timeoutMs),
     },
-    body: JSON.stringify({
-      query,
-      search_depth: "advanced",
-      max_results: 10,
-      topic: options.focus === "Berita" ? "news" : "general",
-      ...(options.from ? { start_date: options.from } : {}),
-      ...(options.to ? { end_date: options.to } : {}),
-    }),
-    signal: AbortSignal.timeout(45000),
-  });
+  );
   if (!r.ok) throw new AppError(502, "Penyedia pencarian gagal merespons.");
+  const response = await r.json();
+  const normalized =
+    config.id === "brave"
+      ? {
+          results: (response.web?.results || []).map(
+            (entry: { title: string; url: string; description?: string }) => ({
+              title: entry.title,
+              url: entry.url,
+              content: entry.description || "",
+            }),
+          ),
+        }
+      : response;
   return searchSchema
-    .parse(await r.json())
+    .parse(normalized)
     .results.filter((s, i, a) => a.findIndex((x) => x.url === s.url) === i)
     .map((s, i) => ({
       ...s,

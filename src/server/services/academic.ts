@@ -1,3 +1,5 @@
+import { resolveService } from "@/server/admin/router";
+import { rateLimit } from "@/lib/queue";
 import { z } from "zod";
 import { AppError } from "@/lib/errors";
 export type AcademicReference = {
@@ -37,13 +39,103 @@ const crossrefSchema = z.object({
     ),
   }),
 });
+type AcademicEntry = {
+  id?: string;
+  paperId?: string;
+  title?: string;
+  display_name?: string;
+  authors?: { name?: string }[];
+  authorships?: { author?: { display_name?: string } }[];
+  publication_year?: number;
+  year?: number;
+  primary_location?: { source?: { display_name?: string } };
+  venue?: string;
+  doi?: string;
+  externalIds?: { DOI?: string };
+  url?: string;
+  abstract?: string;
+  open_access?: { is_oa?: boolean };
+  isOpenAccess?: boolean;
+};
 export async function academicSearch(
   query: string,
   from?: number,
   to?: number,
   openAccess = false,
 ): Promise<AcademicReference[]> {
-  const params = new URLSearchParams({ query, rows: "20", sort: "relevance" });
+  const config = await resolveService("academic");
+  await rateLimit("provider:" + config.id, config.requestLimit);
+  if (config.id !== "crossref") {
+    const url = new URL(
+      config.endpoint + (config.id === "openalex" ? "/works" : "/paper/search"),
+    );
+    url.searchParams.set(config.id === "openalex" ? "search" : "query", query);
+    url.searchParams.set(config.id === "openalex" ? "per_page" : "limit", "20");
+    if (config.id === "semantic-scholar")
+      url.searchParams.set(
+        "fields",
+        "title,authors,year,venue,externalIds,url,abstract,isOpenAccess",
+      );
+    const headers: Record<string, string> = {};
+    if (config.secrets.apiKey)
+      headers[config.id === "openalex" ? "Authorization" : "x-api-key"] =
+        config.id === "openalex"
+          ? "Bearer " + config.secrets.apiKey
+          : config.secrets.apiKey;
+    const response = await fetch(url, {
+      headers,
+      redirect: "error",
+      signal: AbortSignal.timeout(config.timeoutMs),
+    });
+    if (!response.ok)
+      throw new AppError(502, "Layanan metadata akademik belum tersedia.");
+    const data = await response.json();
+    const entries = config.id === "openalex" ? data.results : data.data;
+    if (!Array.isArray(entries))
+      throw new AppError(502, "Format metadata akademik tidak valid.");
+    return entries
+      .map((entry: AcademicEntry) => ({
+        id: String(entry.id || entry.paperId),
+        title: String(
+          entry.title || entry.display_name || "Judul belum tersedia",
+        ),
+        authors: (config.id === "openalex"
+          ? entry.authorships || []
+          : entry.authors || []
+        ).map((a: { name?: string; author?: { display_name?: string } }) =>
+          String(a.name || a.author?.display_name || ""),
+        ),
+        year: entry.publication_year || entry.year || null,
+        publication:
+          entry.primary_location?.source?.display_name ||
+          entry.venue ||
+          "Belum tersedia",
+        doi: entry.doi
+          ? String(entry.doi).replace("https://doi.org/", "")
+          : entry.externalIds?.DOI || null,
+        url:
+          entry.doi ||
+          entry.url ||
+          entry.id ||
+          "https://www.semanticscholar.org/paper/" + entry.paperId,
+        abstract: entry.abstract || null,
+        openAccess: !!(entry.open_access?.is_oa || entry.isOpenAccess),
+        verified: true,
+      }))
+      .filter(
+        (entry: AcademicReference) =>
+          (!from || (!!entry.year && entry.year >= from)) &&
+          (!to || (!!entry.year && entry.year <= to)) &&
+          (!openAccess || entry.openAccess),
+      );
+  }
+  const params = new URLSearchParams({
+    query,
+    rows: String((config.settings as { maxResults?: number }).maxResults || 20),
+    sort: "relevance",
+  });
+  const contact = (config.settings as { contactEmail?: string }).contactEmail;
+  if (contact) params.set("mailto", contact);
   const filters = [
     "type:journal-article",
     ...(from ? [`from-pub-date:${from}`] : []),
@@ -51,9 +143,10 @@ export async function academicSearch(
     ...(openAccess ? ["has-license:true"] : []),
   ];
   params.set("filter", filters.join(","));
-  const response = await fetch(`https://api.crossref.org/works?${params}`, {
+  const response = await fetch(config.endpoint + "/works?" + params, {
     headers: { "User-Agent": "HOLYAI/0.1 (academic metadata search)" },
-    signal: AbortSignal.timeout(20000),
+    signal: AbortSignal.timeout(config.timeoutMs),
+    redirect: "error",
   });
   if (!response.ok)
     throw new AppError(502, "Crossref sedang tidak tersedia. Coba kembali.");

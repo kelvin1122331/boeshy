@@ -1,7 +1,12 @@
+import { hasPermission } from "@/lib/permissions";
+import {
+  assertFeatureEnabled,
+  assertFeatureReady,
+} from "@/server/admin/router";
 import { z } from "zod";
 import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/database";
-import { requireUser, requireAdmin, assertOrigin } from "@/lib/auth/guard";
+import { requireUser, assertOrigin } from "@/lib/auth/guard";
 import { AppError, errorResponse } from "@/lib/errors";
 import { readJSON } from "@/lib/http";
 import { capabilities } from "@/lib/ai/capabilities";
@@ -44,6 +49,10 @@ export async function workspaceAPI(request: Request, path: string[]) {
     const method = request.method;
     const url = new URL(request.url);
     const [resource, id, action] = path;
+    if (resource === "tasks" && method !== "GET")
+      await assertFeatureEnabled("task-manager");
+    if (resource === "academic")
+      await assertFeatureEnabled("academic-research");
     if (["POST", "PATCH", "DELETE"].includes(method))
       await db.auditLog.create({
         data: {
@@ -56,7 +65,16 @@ export async function workspaceAPI(request: Request, path: string[]) {
       method === "POST" || method === "PATCH" ? await readJSON(request) : {};
     if (resource === "capabilities")
       return Response.json({
-        ...capabilities(),
+        ...(await capabilities()),
+        canConfigureProviders: hasPermission(
+          (
+            await db.user.findUnique({
+              where: { id: userId },
+              select: { role: true },
+            })
+          )?.role || "user",
+          "providers.write",
+        ),
         canvaConnected: !!(await db.integrationAccount.findUnique({
           where: { userId_provider: { userId, provider: "canva" } },
           select: { id: true },
@@ -217,12 +235,7 @@ export async function workspaceAPI(request: Request, path: string[]) {
           throw new AppError(400, "Gunakan alur khusus fitur ini.");
         const input = inputSchema.parse(body);
         await ownedProject(userId, input.projectId);
-        const caps = capabilities();
-        if (!caps[feature.capability])
-          throw new AppError(
-            503,
-            "Requires Configuration: hubungkan provider untuk fitur ini di pengaturan server.",
-          );
+        await assertFeatureReady(id);
         await checkQuota(userId);
         await ensureRedis();
         if (
@@ -315,7 +328,7 @@ export async function workspaceAPI(request: Request, path: string[]) {
         return Response.json(
           await generateJSON(
             userId,
-            "task-extraction",
+            "task-manager",
             `Extract likely tasks, subject, instructions, priority, and deadlines. Current UTC date ${new Date().toISOString()}, user timezone ${user.timezone}. Ambiguous dates MUST be null, mark questions. Do not save tasks; user must confirm every task.`,
             input.text,
             z.object({
@@ -514,43 +527,11 @@ export async function workspaceAPI(request: Request, path: string[]) {
       );
     }
     if (resource === "admin") {
-      await requireAdmin();
-      const [users, jobs, usage, audits] = await Promise.all([
-        db.user.findMany({
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-            createdAt: true,
-          },
-          take: 100,
-        }),
-        db.generationJob.findMany({
-          select: {
-            id: true,
-            kind: true,
-            status: true,
-            stage: true,
-            error: true,
-            createdAt: true,
-          },
-          orderBy: { createdAt: "desc" },
-          take: 100,
-        }),
-        db.usageRecord.groupBy({
-          by: ["feature", "provider"],
-          _sum: { inputTokens: true, outputTokens: true },
-          _count: true,
-        }),
-        db.auditLog.findMany({ orderBy: { createdAt: "desc" }, take: 50 }),
-      ]);
-      return Response.json({
-        users,
-        jobs,
-        usage,
-        audits,
-        capabilities: capabilities(),
+      const { adminIdentity } = await import("@/server/admin/access");
+      const { overview } = await import("@/server/admin/monitoring");
+      await adminIdentity("monitoring.read");
+      return Response.json(await overview(), {
+        headers: { "Cache-Control": "no-store" },
       });
     }
     throw new AppError(404, "Rute tidak ditemukan.");

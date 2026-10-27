@@ -52,7 +52,7 @@ export function ToolWorkspace({ id }: { id: FeatureId }) {
     "book-creator",
     "academic-document",
   ].includes(id);
-  const available = !!caps?.[f.capability];
+  const available = caps?.featureStatus?.[id]?.ready ?? !!caps?.[f.capability];
   useEffect(() => {
     const itemId = params.get("item");
     if (itemId)
@@ -121,11 +121,10 @@ export function ToolWorkspace({ id }: { id: FeatureId }) {
       </PageHeader>
       {caps && !available && (
         <Alert>
-          <b>Requires Configuration.</b>{" "}
-          {f.capability === "search"
-            ? "Hubungkan provider AI dan Tavily."
-            : "Hubungkan provider AI untuk menjalankan fitur ini."}{" "}
-          <Link href="/settings/integrations">Lihat panduan integrasi →</Link>
+          AI provider belum dikonfigurasi. Hubungi administrator.{" "}
+          {caps.canConfigureProviders && (
+            <Link href="/admin/ai-providers">Configure Provider →</Link>
+          )}
         </Alert>
       )}
       {id === "originality-checker" && (

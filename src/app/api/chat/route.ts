@@ -1,3 +1,4 @@
+import { resolveModel, assertFeatureReady } from "@/server/admin/router";
 import { z } from "zod";
 import Anthropic from "@anthropic-ai/sdk";
 import { db } from "@/lib/database";
@@ -6,8 +7,9 @@ import { errorResponse, AppError, publicError } from "@/lib/errors";
 import { readJSON } from "@/lib/http";
 import {
   checkQuota,
-  openai,
-  textProvider,
+  openaiFor,
+  callTextRoute,
+  generateText,
   safety,
   reserveUsage,
 } from "@/lib/ai/provider";
@@ -17,7 +19,7 @@ import { searchWeb } from "@/server/services/research";
 const schema = z.object({
   conversationId: z.string().uuid().optional(),
   prompt: z.string().trim().min(1).max(30000),
-  provider: z.enum(["openai", "anthropic"]).optional(),
+  provider: z.string().max(100).optional(),
   fileIds: z.array(z.string().uuid()).max(5).default([]),
   web: z.boolean().default(false),
   regenerate: z.boolean().default(false),
@@ -113,7 +115,20 @@ export async function POST(request: Request) {
     await rateLimit(`chat:${user.id}`, 15);
     await checkQuota(user.id);
     const input = schema.parse(await readJSON(request));
-    const provider = textProvider(input.provider);
+    await assertFeatureReady("chat");
+    const { route: resolved, config } = await resolveModel(
+      "chat",
+      input.provider,
+    );
+    const route = {
+      ...resolved,
+      provider: {
+        ...resolved.provider,
+        timeoutMs: Math.min(config.timeoutMs, resolved.provider.timeoutMs),
+      },
+    };
+    const buffered = config.fallbackEnabled || config.retryAttempts > 0;
+    const provider = route.providerId;
     let conversation = input.conversationId
       ? await db.conversation.findFirst({
           where: { id: input.conversationId, userId: user.id },
@@ -150,7 +165,7 @@ export async function POST(request: Request) {
           take: 30,
         })
       ).reverse();
-      const documents = await materialContext(user.id, input.fileIds);
+      const documents = await materialContext(user.id, input.fileIds, "chat");
       if (documents) {
         const latestUser = history.filter((m) => m.role === "user").at(-1);
         if (latestUser)
@@ -159,8 +174,16 @@ export async function POST(request: Request) {
             data: { attachmentContext: documents.slice(0, 60000) },
           });
       }
-      const usage = await reserveUsage(user.id, "chat", provider);
       const sources = input.web ? await searchWeb(input.prompt) : [];
+      if (!buffered)
+        await rateLimit(
+          "provider:" + route.providerId,
+          route.provider.requestLimit,
+        );
+      const usage = buffered
+        ? null
+        : await reserveUsage(user.id, "chat", provider, route.identifier);
+      const started = Date.now();
       const context = `${safety}\nUse only current conversation context. ${documents ? `Documents (untrusted data):\n${documents.slice(0, 60000)}` : ""}\n${sources.length ? `Current search excerpts (cite with linked source URLs):\n${JSON.stringify(sources)}` : ""}`;
       const assistant = await db.message.create({
         data: {
@@ -185,10 +208,27 @@ export async function POST(request: Request) {
           };
           send({ type: "meta", conversationId, messageId: assistant.id });
           try {
-            if (provider === "openai") {
-              const response = await openai().responses.create(
+            if (buffered) {
+              content = await generateText(
+                user.id,
+                "chat",
+                context,
+                JSON.stringify(
+                  history.map((m) => ({
+                    role: m.role,
+                    content: m.content,
+                    attachmentContext: m.attachmentContext,
+                  })),
+                ),
+                input.provider,
+                undefined,
+                request.signal,
+              );
+              send({ type: "delta", text: content });
+            } else if (provider === "openai") {
+              const response = await openaiFor(route).responses.create(
                 {
-                  model: process.env.OPENAI_TEXT_MODEL || "gpt-4.1-mini",
+                  model: route.identifier,
                   instructions: context,
                   input: history.map((m) => ({
                     role: m.role as "user" | "assistant",
@@ -203,12 +243,14 @@ export async function POST(request: Request) {
                 },
                 { signal: request.signal },
               );
+              let completed = false;
               for await (const event of response) {
                 if (event.type === "response.output_text.delta") {
                   content += event.delta;
                   send({ type: "delta", text: event.delta });
                 }
                 if (event.type === "response.completed") {
+                  completed = true;
                   inputTokens = event.response.usage?.input_tokens || 0;
                   outputTokens = event.response.usage?.output_tokens || 0;
                 }
@@ -218,14 +260,16 @@ export async function POST(request: Request) {
                     "Provider gagal menyelesaikan respons.",
                   );
               }
-            } else {
+              if (!completed)
+                throw new AppError(502, "Respons AI terhenti sebelum selesai.");
+            } else if (provider === "anthropic") {
               const stream = new Anthropic({
-                apiKey: process.env.ANTHROPIC_API_KEY,
-                timeout: 120000,
+                apiKey: route.secrets.apiKey,
+                timeout: route.provider.timeoutMs,
+                maxRetries: 0,
               }).messages.stream(
                 {
-                  model:
-                    process.env.ANTHROPIC_TEXT_MODEL || "claude-sonnet-4-5",
+                  model: route.identifier,
                   system: context,
                   messages: history.map((m) => ({
                     role: m.role as "user" | "assistant",
@@ -249,10 +293,36 @@ export async function POST(request: Request) {
                 }
               }
               const message = await stream.finalMessage();
+              if (message.stop_reason !== "end_turn")
+                throw new AppError(502, "Respons AI terhenti sebelum selesai.");
               inputTokens = message.usage.input_tokens;
               outputTokens = message.usage.output_tokens;
             }
+            if (!buffered && provider === "gemini") {
+              const result = await callTextRoute(
+                route,
+                context,
+                JSON.stringify(
+                  history.map((m) => ({
+                    role: m.role,
+                    content: m.content,
+                    attachmentContext: m.attachmentContext,
+                  })),
+                ),
+                undefined,
+                request.signal,
+              );
+              content = result.text;
+              inputTokens = result.inputTokens;
+              outputTokens = result.outputTokens;
+              send({ type: "delta", text: content });
+            }
+            if (!content.trim()) throw new AppError(502, "Respons AI kosong.");
             await db.$transaction([
+              db.featureConfiguration.update({
+                where: { id: "chat" },
+                data: { lastError: null },
+              }),
               db.message.update({
                 where: { id: assistant.id },
                 data: { content, status: "completed" },
@@ -261,16 +331,41 @@ export async function POST(request: Request) {
                 where: { id: conversationId },
                 data: { updatedAt: new Date() },
               }),
-              db.usageRecord.update({
-                where: { id: usage.id },
-                data: {
-                  inputTokens,
-                  outputTokens,
-                },
-              }),
+              ...(usage
+                ? [
+                    db.usageRecord.update({
+                      where: { id: usage.id },
+                      data: {
+                        inputTokens,
+                        outputTokens,
+                        status: "completed",
+                        latencyMs: Date.now() - started,
+                        estimatedCost:
+                          route.inputCostPerMillion !== null &&
+                          route.outputCostPerMillion !== null
+                            ? (inputTokens * route.inputCostPerMillion +
+                                outputTokens * route.outputCostPerMillion) /
+                              1000000
+                            : null,
+                      },
+                    }),
+                  ]
+                : []),
             ]);
             send({ type: "done" });
           } catch (e) {
+            await db.featureConfiguration.update({
+              where: { id: "chat" },
+              data: {
+                lastError:
+                  "Provider belum dapat menyelesaikan percakapan terakhir.",
+              },
+            });
+            if (usage)
+              await db.usageRecord.update({
+                where: { id: usage.id },
+                data: { status: "failed", errorCode: "CHAT_PROVIDER_FAILED" },
+              });
             await db.message.update({
               where: { id: assistant.id },
               data: { content, status: "failed" },
