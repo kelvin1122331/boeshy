@@ -1,0 +1,286 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id String @id @default(uuid())
+  name String
+  email String @unique
+  emailVerified Boolean @default(false)
+  image String?
+  role String @default("user")
+  timezone String @default("Asia/Jakarta")
+  language String @default("id")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sessions Session[]
+  accounts Account[]
+  projects Project[]
+  files ProjectFile[]
+  conversations Conversation[]
+  items WorkspaceItem[]
+  jobs GenerationJob[]
+  exams Exam[]
+  attempts ExamAttempt[]
+  tasks Task[]
+  notifications Notification[]
+  usage UsageRecord[]
+  integrations IntegrationAccount[]
+  oauthStates OAuthState[]
+  audits AuditLog[]
+}
+model Session {
+  id String @id @default(uuid())
+  token String @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+model Account {
+  id String @id @default(uuid())
+  accountId String
+  providerId String
+  userId String
+  accessToken String?
+  refreshToken String?
+  idToken String?
+  accessTokenExpiresAt DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope String?
+  password String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+model Verification {
+  id String @id @default(uuid())
+  identifier String
+  value String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([identifier])
+}
+model Project {
+  id String @id @default(uuid())
+  userId String
+  title String
+  description String @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  files ProjectFile[]
+  items WorkspaceItem[]
+  conversations Conversation[]
+  @@index([userId,updatedAt])
+}
+model ProjectFile {
+  id String @id @default(uuid())
+  userId String
+  projectId String?
+  name String
+  mime String
+  size Int
+  key String @unique
+  text String @default("")
+  pages Json?
+  warning String?
+  createdAt DateTime @default(now())
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  project Project? @relation(fields:[projectId],references:[id],onDelete:SetNull)
+  @@index([userId,createdAt])
+}
+model Conversation {
+  id String @id @default(uuid())
+  userId String
+  projectId String?
+  title String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  project Project? @relation(fields:[projectId],references:[id],onDelete:SetNull)
+  messages Message[]
+  @@index([userId,updatedAt])
+}
+model Message {
+  id String @id @default(uuid())
+  conversationId String
+  role String
+  content String
+  attachmentContext String?
+  status String @default("completed")
+  createdAt DateTime @default(now())
+  conversation Conversation @relation(fields:[conversationId],references:[id],onDelete:Cascade)
+  @@index([conversationId,createdAt])
+}
+model WorkspaceItem {
+  id String @id @default(uuid())
+  userId String
+  projectId String?
+  kind String
+  title String
+  data Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  project Project? @relation(fields:[projectId],references:[id],onDelete:SetNull)
+  versions DocumentVersion[]
+  jobs GenerationJob[]
+  @@index([userId,kind,updatedAt])
+  @@index([projectId])
+}
+model DocumentVersion {
+  id String @id @default(uuid())
+  itemId String
+  data Json
+  createdAt DateTime @default(now())
+  item WorkspaceItem @relation(fields:[itemId],references:[id],onDelete:Cascade)
+  @@index([itemId,createdAt])
+}
+model GenerationJob {
+  id String @id @default(uuid())
+  userId String
+  itemId String?
+  kind String
+  status String @default("queued")
+  stage String @default("queued")
+  input Json
+  result Json?
+  error String?
+  providerId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  item WorkspaceItem? @relation(fields:[itemId],references:[id],onDelete:SetNull)
+  assets GeneratedAsset[]
+  @@index([userId,status,createdAt])
+}
+model GeneratedAsset {
+  id String @id @default(uuid())
+  jobId String
+  key String @unique
+  mime String
+  createdAt DateTime @default(now())
+  job GenerationJob @relation(fields:[jobId],references:[id],onDelete:Cascade)
+}
+model Exam {
+  id String @id @default(uuid())
+  userId String
+  title String
+  mode String
+  durationMinutes Int?
+  material String
+  createdAt DateTime @default(now())
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  questions ExamQuestion[]
+  attempts ExamAttempt[]
+  @@index([userId,createdAt])
+}
+model ExamQuestion {
+  id String @id @default(uuid())
+  examId String
+  position Int
+  topic String
+  prompt String
+  options Json
+  correctIndex Int
+  explanation String
+  source String?
+  exam Exam @relation(fields:[examId],references:[id],onDelete:Cascade)
+  answers ExamAnswer[]
+  @@unique([examId,position])
+}
+model ExamAttempt {
+  id String @id @default(uuid())
+  userId String
+  examId String
+  startedAt DateTime @default(now())
+  submittedAt DateTime?
+  score Float?
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  exam Exam @relation(fields:[examId],references:[id],onDelete:Cascade)
+  answers ExamAnswer[]
+  @@index([userId,startedAt])
+}
+model ExamAnswer {
+  id String @id @default(uuid())
+  attemptId String
+  questionId String
+  selectedIndex Int
+  attempt ExamAttempt @relation(fields:[attemptId],references:[id],onDelete:Cascade)
+  question ExamQuestion @relation(fields:[questionId],references:[id],onDelete:Cascade)
+  @@unique([attemptId,questionId])
+}
+model Task {
+  id String @id @default(uuid())
+  userId String
+  title String
+  description String @default("")
+  subject String @default("")
+  priority String @default("medium")
+  status String @default("todo")
+  dueAt DateTime?
+  remindedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@index([userId,status,dueAt])
+}
+model Notification {
+  id String @id @default(uuid())
+  userId String
+  title String
+  href String
+  read Boolean @default(false)
+  createdAt DateTime @default(now())
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@index([userId,read,createdAt])
+}
+model UsageRecord {
+  id String @id @default(uuid())
+  userId String
+  feature String
+  provider String
+  inputTokens Int @default(0)
+  outputTokens Int @default(0)
+  createdAt DateTime @default(now())
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@index([userId,createdAt])
+}
+model IntegrationAccount {
+  id String @id @default(uuid())
+  userId String
+  provider String
+  encryptedTokens String
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@unique([userId,provider])
+}
+model OAuthState {
+  id String @id
+  userId String
+  verifier String
+  expiresAt DateTime
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@index([expiresAt])
+}
+model AuditLog {
+  id String @id @default(uuid())
+  userId String?
+  action String
+  resourceId String?
+  createdAt DateTime @default(now())
+  user User? @relation(fields:[userId],references:[id],onDelete:SetNull)
+  @@index([userId,createdAt])
+}

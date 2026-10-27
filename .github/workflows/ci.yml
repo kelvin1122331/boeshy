@@ -1,0 +1,51 @@
+name: Verify HOLYAI
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: holyai
+          POSTGRES_PASSWORD: holyai
+          POSTGRES_DB: holyai
+        ports: [5432:5432]
+        options: --health-cmd "pg_isready -U holyai" --health-interval 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: [6379:6379]
+    env:
+      DATABASE_URL: postgresql://holyai:holyai@localhost:5432/holyai
+      REDIS_URL: redis://localhost:6379
+      APP_URL: http://127.0.0.1:3000
+      BETTER_AUTH_URL: http://127.0.0.1:3000
+      BETTER_AUTH_SECRET: ci-only-test-secret-please-never-use-in-production-123
+      REQUIRE_EMAIL_VERIFICATION: 'false'
+      RUN_INFRA_TESTS: 'true'
+      S3_ENDPOINT: http://127.0.0.1:9000
+      S3_REGION: us-east-1
+      S3_BUCKET: holyai
+      S3_ACCESS_KEY_ID: holyai-ci
+      S3_SECRET_ACCESS_KEY: ci-only-storage-password
+      S3_FORCE_PATH_STYLE: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run db:migrate
+      - run: docker compose up -d storage
+      - run: npx wait-on tcp:9000
+      - run: npm run storage:init
+      - run: npm run worker > /tmp/holyai-worker.log 2>&1 &
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm start > /tmp/holyai.log 2>&1 &
+      - run: npx wait-on http://127.0.0.1:3000
+      - run: npm run test:e2e

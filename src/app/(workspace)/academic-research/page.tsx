@@ -1,0 +1,10 @@
+import { Suspense } from "react";
+import { Spinner } from "@/components/common";
+import { Academic } from "@/components/research/academic";
+export default function Page() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <Academic />
+    </Suspense>
+  );
+}
