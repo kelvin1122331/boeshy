@@ -8,11 +8,11 @@ test("public links open dedicated pages, with working catalogue filters and home
   await page.goto("/");
   await expect(
     page.getByRole("heading", {
-      name: "One Intelligence. Endless Possibilities.",
+      name: /Satu AI.*Untuk Semua.*Kemungkinan/,
     }),
   ).toBeVisible();
   await page
-    .getByRole("link", { name: "Explore Features", exact: true })
+    .getByRole("link", { name: "Jelajahi Semua Fitur", exact: true })
     .click();
   await expect(page).toHaveURL(/\/features$/);
   await expect(page.locator(".marketing-feature-card")).toHaveCount(18);
@@ -61,7 +61,13 @@ test("public pages fit desktop, tablet and mobile in both themes", async ({
     );
     for (const width of [1440, 988, 390]) {
       await page.setViewportSize({ width, height: 960 });
-      for (const route of ["/", "/features", "/how-it-works", "/privacy"]) {
+      for (const route of [
+        "/",
+        "/features",
+        "/how-it-works",
+        "/privacy",
+        "/help",
+      ]) {
         await page.goto(route);
         await expect(page.locator(".marketing-main h1")).toBeVisible();
         await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
@@ -99,7 +105,7 @@ test("mobile menu reaches every public page and exposes the current location", a
   await page.goto("/");
   await page.getByRole("button", { name: "Buka menu", exact: true }).click();
   const menu = page.getByRole("navigation", { name: "Navigasi seluler" });
-  await menu.getByRole("link", { name: "Kemampuan", exact: true }).click();
+  await menu.getByRole("link", { name: "Fitur", exact: true }).click();
   await expect(page).toHaveURL(/\/features$/);
   await expect(
     page.getByRole("button", { name: "Buka menu", exact: true }),
@@ -116,4 +122,63 @@ test("mobile menu reaches every public page and exposes the current location", a
   await expect(
     menu.getByRole("link", { name: "Privasi", exact: true }),
   ).toHaveAttribute("aria-current", "page");
+});
+
+test("homepage search, theme and help controls work", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator(".showcase-feature-card")).toHaveCount(6);
+  await expect(
+    page.getByRole("link", { name: "Lihat Cara Kerja", exact: true }),
+  ).toHaveAttribute("href", "/how-it-works");
+  await expect(page.locator(".showcase-hero-visual img")).toBeVisible();
+  expect(
+    await page
+      .locator(".showcase-hero-visual img")
+      .evaluate(
+        (image) =>
+          (image as HTMLImageElement).complete &&
+          (image as HTMLImageElement).naturalWidth > 0,
+      ),
+  ).toBe(true);
+  await page.keyboard.press("Control+k");
+  const search = page.getByRole("dialog", { name: "Cari kemampuan HOLYAI" });
+  await expect(search).toBeVisible();
+  await expect(search.getByLabel("Cari fitur", { exact: true })).toBeFocused();
+  await search.getByLabel("Cari fitur", { exact: true }).fill("gambar");
+  await expect(
+    search.getByRole("link", { name: /Image Generator/ }),
+  ).toBeVisible();
+  await search
+    .getByLabel("Cari fitur", { exact: true })
+    .fill("tidakadafiturini");
+  await expect(search.getByRole("status")).toHaveText(/Belum ada fitur/);
+  await page.keyboard.press("Escape");
+  await expect(search).not.toBeVisible();
+  await page.getByRole("button", { name: "Ganti tema", exact: true }).click();
+  await expect(page.locator(".showcase-header")).toHaveAttribute(
+    "data-home-theme",
+    "dark",
+  );
+  await page.getByRole("button", { name: "Ganti tema", exact: true }).click();
+  await expect(page.locator(".showcase-header")).toHaveAttribute(
+    "data-home-theme",
+    "light",
+  );
+  await page
+    .getByRole("link", { name: "Butuh bantuan?", exact: false })
+    .click();
+  await expect(page).toHaveURL(/\/help$/);
+  await page
+    .getByText("Bagaimana cara mulai menggunakan HOLYAI?", { exact: true })
+    .click();
+  await expect(page.locator(".marketing-faq details").first()).toHaveAttribute(
+    "open",
+    "",
+  );
+  await expect(
+    page
+      .locator(".marketing-faq details")
+      .first()
+      .getByText(/Buat akun melalui/),
+  ).toBeVisible();
 });

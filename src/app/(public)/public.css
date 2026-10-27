@@ -1061,107 +1061,237 @@
   }
 }
 
-/* The homepage follows the original centered hero; details live on their own pages. */
-.marketing-site:has(.marketing-home) {
-  --bg: #0b1120;
-  --surface: #111827;
-  --surface-alt: #1e293b;
-  --text: #e8eef8;
-  --muted: #a0aec0;
-  --border: #283348;
+/* Search and help are available from public pages. */
+.marketing-desktop-nav {
+  gap: 22px;
+}
+.marketing-header-actions {
+  gap: 16px;
+}
+.marketing-help-links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 45px;
+}
+.marketing-help-links > a {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 25px;
   background: var(--surface);
-  color: var(--text);
-  color-scheme: dark;
 }
-.marketing-site:has(.marketing-home) .marketing-header {
-  border-bottom-color: transparent;
+.marketing-help-links > a > svg:first-child {
+  color: var(--marketing-link);
+  flex-shrink: 0;
 }
-.marketing-site:has(.marketing-home) .marketing-header-inner {
-  max-width: 1440px;
-  grid-template-columns: 1fr auto auto;
-  padding: 24px 20px;
+.marketing-help-links > a > svg:last-child {
+  margin-left: auto;
+  flex-shrink: 0;
 }
-.marketing-site:has(.marketing-home) .marketing-theme,
-.marketing-site:has(.marketing-home) .marketing-footer {
+.marketing-help-links h2 {
+  font-size: 18px;
+}
+.marketing-help-links p {
+  font-size: 13px;
+  margin-top: 6px;
+}
+.marketing-faq {
+  max-width: 850px;
+  padding-bottom: 20px;
+}
+.marketing-faq > h2 {
+  font-size: 25px;
+  margin-bottom: 25px;
+}
+.marketing-faq details {
+  border-top: 1px solid var(--border);
+  padding: 20px 0;
+}
+.marketing-faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 550;
+  list-style: none;
+}
+.marketing-faq summary::-webkit-details-marker {
   display: none;
 }
-.marketing-home {
-  min-height: calc(100svh - 92px);
-  padding: clamp(64px, 10svh, 120px) 24px 72px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+.marketing-faq summary > svg {
+  flex-shrink: 0;
+  color: var(--marketing-link);
 }
-.marketing-home-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 13px;
-  border: 1px solid #dbeafe;
-  border-radius: 999px;
-  background: #eff6ff;
-  color: #2563eb;
-  font-size: 10px;
-  line-height: 1.6;
+.marketing-faq details[open] summary > svg {
+  transform: rotate(45deg);
 }
-.marketing-home h1 {
-  font-size: clamp(44px, 6.5vw, 72px);
-  line-height: 1.15;
-  letter-spacing: -2.8px;
-  font-weight: 650;
-  margin-top: 30px;
-}
-.marketing-home h1 > span {
-  color: var(--primary);
-}
-.marketing-home-description {
-  max-width: 620px;
-  margin-top: 28px;
-  font-size: 16px;
+.marketing-faq details p {
+  margin: 15px 35px 0 0;
+  font-size: 14px;
   line-height: 1.9;
 }
-.marketing-home-actions {
+.showcase-search-trigger {
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 32px;
+  align-items: center;
+  gap: 10px;
+  width: 270px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #b9c8df;
+  border-radius: 11px;
+  color: var(--muted);
+  background: #d5dfed66;
+  text-align: left;
 }
-.marketing-home-actions .btn {
-  min-height: 44px;
-  padding: 11px 18px;
-  font-size: 12px;
+.showcase-search-trigger > span {
+  flex: 1;
+  font-size: 11px;
 }
-.marketing-home-caption {
-  margin-top: 24px;
+.showcase-search-trigger kbd {
+  padding: 2px 6px;
   font-size: 10px;
-  line-height: 1.8;
+  border: 1px solid #aabbd366;
+  border-radius: 5px;
+}
+.showcase-search-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #08142688;
+  backdrop-filter: blur(6px);
+}
+.showcase-search-dialog {
+  position: fixed;
+  z-index: 101;
+  top: 12svh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(600px, calc(100vw - 32px));
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: 0 30px 100px #0004;
+}
+.showcase-search-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.showcase-search-heading h2 {
+  font-size: 21px;
+}
+.showcase-search-heading p {
+  font-size: 13px;
+  margin-top: 3px;
+}
+.showcase-search-close {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+.showcase-search-close:hover {
+  background: var(--surface-alt);
+}
+.showcase-search-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.showcase-search-field > svg {
+  position: absolute;
+  left: 13px;
+  color: var(--muted);
+}
+.showcase-search-field input {
+  padding-left: 42px !important;
+}
+.showcase-search-results {
+  margin-top: 16px;
+  max-height: 48svh;
+  overflow-y: auto;
+}
+.showcase-search-results > a {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  border-radius: 10px;
+  padding: 12px 8px;
+}
+.showcase-search-results > a:hover {
+  background: var(--surface-alt);
+}
+.showcase-search-results .tool-icon {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 9px;
+}
+.showcase-search-results strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.showcase-search-results p {
+  font-size: 12px;
+  line-height: 1.6;
+  margin-top: 2px;
+}
+.showcase-search-results > a > svg:last-child {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--muted);
+}
+.showcase-search-empty {
+  padding: 30px 12px;
+  font-size: 14px;
+  text-align: center;
+}
+.showcase-search-footnote {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 11px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  margin-top: 15px;
+  padding-top: 15px;
 }
 @media (max-width: 700px) {
-  .marketing-site:has(.marketing-home) .marketing-header-inner {
-    padding: 16px 22px;
+  .marketing-help-links {
+    grid-template-columns: 1fr;
   }
-  .marketing-home {
-    min-height: calc(100svh - 73px);
-    padding: 70px 22px 56px;
+  .marketing-help-links > a {
+    padding: 22px;
   }
-  .marketing-home h1 {
-    font-size: clamp(30px, 7vw, 46px);
-    letter-spacing: -1.4px;
-    margin-top: 27px;
+  .showcase-search-dialog {
+    top: 6svh;
+    padding: 20px;
   }
-  .marketing-home-description {
-    max-width: 510px;
-    font-size: 14px;
-    line-height: 1.9;
-    margin-top: 25px;
-  }
-  .marketing-home-actions {
-    margin-top: 28px;
-  }
-  .marketing-home-caption {
-    max-width: 280px;
-    margin-top: 25px;
-  }
+}
+
+.showcase-search-dialog {
+  --surface: #fff;
+  --surface-alt: #f1f5fb;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #dce5f3;
+  color-scheme: light;
+}
+.showcase-search-dialog.is-dark {
+  --surface: #111d33;
+  --surface-alt: #21324c;
+  --text: #e8eef8;
+  --muted: #aebed6;
+  --border: #344866;
+  color-scheme: dark;
 }
