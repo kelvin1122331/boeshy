@@ -51,8 +51,7 @@ export function Dashboard({ name }: { name: string }) {
             POSSIBILITIES.
           </span>
           <h2>
-            Satu tempat untuk
-            <br />
+            Satu tempat untuk <br />
             semua kemungkinanmu.
           </h2>
           <p>
