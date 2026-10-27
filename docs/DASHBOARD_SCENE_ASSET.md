@@ -1,0 +1,12 @@
+# Dashboard orbital background
+
+- Saved asset: `public/marketing/holyai-orbit-dashboard.webp`.
+- Generation: built-in imagegen with the user's dashboard reference as a visual reference, followed by WebP conversion for web delivery.
+- The generated scene contains no UI. The sidebar, dashboard, composer, counts and feature cards remain real application components.
+- The style is scoped to the dashboard route. Other workspace pages keep their existing styling. The dashboard starts with a dark orbital palette and can switch to a light palette with the existing theme button.
+- Sidebar dimensions and responsive navigation follow the existing shell. Statistics continue to come from the current account data.
+
+## Final generation prompt
+
+Use case: cinematic environment illustration. Asset type: HD background illustration for a functional HOLYAI dashboard, landscape 16:10 composition, at least 1920x1200 if possible. Input image is a visual reference for the BACKGROUND SCENE only. Create only the spectacular realistic outer-space scene seen behind the dashboard UI: a gigantic curved blue Earth occupies the upper left and middle, warm gold city lights on the night surface, delicate cyan atmospheric glow, sunlight breaking over the horizon near upper center. Deep navy starfield across top, a small rocky moon near the upper middle-right, a beautiful luminous spiral galaxy in the upper right, and an elegant orbital space-station structure with cyan lights on the far right edge. Across the lower part, dramatic floating dark rocky asteroids and mountain-like moon rocks amid clouds above the planet, scattered golden glows and soft blue mist. High-end photorealistic science fiction, epic scale, sharp HD details, realistic lighting, rich near-black navy and electric blue with subtle purple galaxy highlights. Keep a quiet darker region at the top left for a live white dashboard heading; large naturally darker areas in the lower half will sit behind translucent UI panels. Main Earth curvature should remain visible above and around where cards will be placed. No astronaut, no panda, no laptop. Absolutely REMOVE ALL website interface elements from the reference: no sidebar, top bar, text, logos, letters, numbers, headings, icons, form fields, inputs, buttons, panels, cards, borders, navigation, or watermark. Fill the entire canvas with one continuous immersive environment. This is a background asset only, NOT a website screenshot or dashboard mockup.
+

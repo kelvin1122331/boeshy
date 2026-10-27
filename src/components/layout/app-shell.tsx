@@ -30,6 +30,8 @@ export function AppShell({
     [search, setSearch] = useState(false),
     [searchText, setSearchText] = useState(""),
     [results, setResults] = useState<SearchResult | null>(null);
+  const [orbitLight, setOrbitLight] = useState(false);
+  const isDashboard = path === "/dashboard";
   const { theme, setTheme } = useTheme();
   const { data: notifications } = useAPI<{ id: string; read: boolean }[]>(
     "notifications",
@@ -84,7 +86,12 @@ export function AppShell({
     setMobile(false);
   }
   return (
-    <div className={`app-shell ${collapsed ? "collapsed" : ""}`}>
+    <div
+      className={`app-shell ${collapsed ? "collapsed" : ""}${isDashboard ? " dashboard-orbit" : ""}`}
+      data-orbit-theme={
+        isDashboard ? (orbitLight ? "light" : "dark") : undefined
+      }
+    >
       {mobile && (
         <button
           className="sidebar-scrim"
@@ -219,9 +226,21 @@ export function AppShell({
             </Link>
             <button
               aria-label="Ganti tema"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              aria-pressed={isDashboard ? !orbitLight : theme === "dark"}
+              onClick={() =>
+                isDashboard
+                  ? setOrbitLight(!orbitLight)
+                  : setTheme(theme === "dark" ? "light" : "dark")
+              }
             >
-              <Icon name={theme === "dark" ? "Sun" : "Moon"} size={18} />
+              <Icon
+                name={
+                  (isDashboard ? !orbitLight : theme === "dark")
+                    ? "Sun"
+                    : "Moon"
+                }
+                size={18}
+              />
             </button>
             <Modal
               title="Akun kamu"

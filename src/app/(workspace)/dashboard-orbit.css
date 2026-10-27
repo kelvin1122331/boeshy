@@ -1,0 +1,585 @@
+.dashboard-orbit {
+  --bg: #040d1c;
+  --surface: #0a192de8;
+  --surface-alt: #17314d;
+  --text: #eef5ff;
+  --muted: #b8cce4;
+  --border: #33516f;
+  --primary: #379dff;
+  --primary-hover: #70baff;
+  position: relative;
+  isolation: isolate;
+  color: var(--text);
+  color-scheme: dark;
+  background: #040d1c;
+}
+.dashboard-orbit::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 0 var(--sidebar);
+  z-index: 0;
+  background:
+    linear-gradient(180deg, #02081512 0%, #030b1826 48%, #030b18a1 100%),
+    url("/marketing/holyai-orbit-dashboard.webp") center top / cover no-repeat;
+  pointer-events: none;
+}
+.dashboard-orbit .app-main {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+.dashboard-orbit .sidebar {
+  background: linear-gradient(155deg, #07101ff5, #0c192ce8 65%, #050e1aef);
+  border-right-color: #36577b9c;
+  box-shadow:
+    5px 0 30px #0004,
+    inset -1px 0 0 #70bcff08;
+  backdrop-filter: blur(18px);
+}
+.dashboard-orbit .sidebar-brand .logo {
+  color: #f1f6ff;
+}
+.dashboard-orbit .sidebar-search {
+  background: #050e1c8c;
+  border-color: #345271;
+  color: #c2d8f2;
+  box-shadow: 0 0 15px #268aff0d;
+}
+.dashboard-orbit .sidebar-search kbd {
+  border-color: #375271;
+}
+.dashboard-orbit .sidebar .nav-link {
+  color: #c2d3e8;
+  font-size: 12px;
+  min-height: 38px;
+}
+.dashboard-orbit .sidebar .nav-link:hover {
+  background: #183555b5;
+  color: #fff;
+}
+.dashboard-orbit .sidebar .nav-link.active {
+  background: linear-gradient(100deg, #193761, #22477d);
+  color: #f4f9ff;
+  box-shadow:
+    0 0 16px #2679ff24,
+    inset 0 0 0 1px #5897ff17;
+}
+.dashboard-orbit .sidebar .nav-link.active svg {
+  color: #78baff;
+}
+.dashboard-orbit .nav-label {
+  color: #9cb5d2;
+}
+.dashboard-orbit .feature-nav {
+  scrollbar-color: #2f4669 transparent;
+}
+.dashboard-orbit .sidebar-bottom,
+.dashboard-orbit .user-card {
+  border-color: #263f5c;
+}
+.dashboard-orbit .user-card small {
+  color: #b1c8e3;
+}
+.dashboard-orbit .topbar {
+  background: #07142766;
+  border-bottom-color: #4b759a5c;
+  backdrop-filter: blur(14px);
+}
+.dashboard-orbit .breadcrumb,
+.dashboard-orbit .topbar-actions {
+  color: #d5e6fa;
+}
+.dashboard-orbit .breadcrumb b {
+  color: #f5f9ff;
+}
+.dashboard-orbit .topbar-actions > button:not(.avatar):hover {
+  color: #70d8ff;
+}
+.dashboard-orbit .workspace-label {
+  border-right-color: #3a5877;
+}
+.dashboard-orbit .dashboard {
+  gap: 27px;
+}
+.dashboard-orbit .dashboard-welcome {
+  min-height: 180px;
+  gap: 24px;
+}
+.dashboard-orbit .dashboard-welcome .eyebrow {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 2.5px;
+  color: #d4e9ff;
+  margin-bottom: 15px;
+}
+.dashboard-orbit .dashboard-welcome h1 {
+  max-width: 540px;
+  font-size: clamp(34px, 3.3vw, 49px);
+  line-height: 1.06;
+  letter-spacing: -1.7px;
+  color: #f6faff;
+  text-shadow: 0 2px 15px #020d2a55;
+}
+.dashboard-orbit .dashboard-title-tail {
+  display: block;
+  background: linear-gradient(100deg, #63d7ff, #4d91ff);
+  color: #5ebeff;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.dashboard-orbit .dashboard-welcome p {
+  font-size: 14px;
+  color: #e3f0ff;
+  margin-top: 14px;
+  line-height: 1.6;
+  text-shadow: 0 2px 10px #0009;
+}
+.dashboard-orbit .dashboard-welcome .btn {
+  background: linear-gradient(125deg, #173051c4, #0b1930d9);
+  border: 1px solid #4c6e9a;
+  color: #ecf5ff;
+  border-radius: 12px;
+  padding: 15px 20px;
+  box-shadow:
+    inset 0 1px 0 #88bcff1c,
+    0 0 20px #1a79e51c;
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
+}
+.dashboard-orbit .command-card {
+  padding: 31px 34px;
+  gap: 38px;
+  border-radius: 17px;
+  border-color: #4383c7bd;
+  background: linear-gradient(125deg, #09162bdd, #071225d9 70%, #0d2744c9);
+  box-shadow:
+    inset 0 0 30px #2777ed12,
+    0 12px 32px #01091840;
+  backdrop-filter: blur(13px);
+}
+.dashboard-orbit .command-label {
+  font-size: 8px;
+  letter-spacing: 1.2px;
+  color: #80c5ff;
+}
+.dashboard-orbit .command-copy {
+  align-self: center;
+}
+.dashboard-orbit .command-copy h2 {
+  font-size: clamp(25px, 2.3vw, 34px);
+  line-height: 1.35;
+  font-weight: 650;
+  letter-spacing: -0.9px;
+  color: #f2f7ff;
+}
+.dashboard-orbit .dashboard-command-accent {
+  color: #91caff;
+}
+.dashboard-orbit .command-copy p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #d4e5fc;
+  margin-top: 15px;
+}
+.dashboard-orbit .command-form form {
+  padding: 18px 20px 12px;
+  border: 1px solid #a4c8ff;
+  border-radius: 13px;
+  box-shadow:
+    0 0 16px #216aff3d,
+    0 8px 22px #0003;
+}
+.dashboard-orbit .command-form label {
+  font-size: 12px;
+  color: #13213e;
+}
+.dashboard-orbit .command-form textarea {
+  min-height: 72px;
+  font-size: 12px !important;
+}
+.dashboard-orbit .command-form textarea::placeholder {
+  color: #7589b3;
+}
+.dashboard-orbit .command-form-bottom span {
+  font-size: 9px;
+  color: #6f82a6;
+}
+.dashboard-orbit .command-form-bottom button {
+  width: 32px;
+  height: 32px;
+  background: #437bff;
+}
+.dashboard-orbit .command-suggestions {
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.dashboard-orbit .command-suggestions button {
+  border-color: #3d6189;
+  color: #b5dbff;
+  font-size: 9px;
+  background: #08162aa6;
+  padding: 6px 8px;
+}
+.dashboard-orbit .command-suggestions button:hover {
+  background: #1b3b60;
+  border-color: #6ba9df;
+}
+.dashboard-orbit .stats-strip {
+  gap: 13px;
+  padding: 0;
+}
+.dashboard-orbit .stats-strip > div {
+  min-width: 0;
+  min-height: 80px;
+  padding: 15px 17px;
+  border: 1px solid #38618b9c;
+  border-radius: 13px;
+  background: linear-gradient(130deg, #10233cdd, #08152ad9);
+  box-shadow:
+    inset 0 1px 0 #7ec4ff0b,
+    0 6px 20px #0002;
+  backdrop-filter: blur(12px);
+  gap: 12px;
+}
+.dashboard-orbit .stats-strip .stat-icon {
+  flex-shrink: 0;
+  width: 41px;
+  height: 41px;
+  border-color: #5479a2;
+  color: #bce6ff;
+  background: linear-gradient(135deg, #274469, #0b1a2c);
+  box-shadow: 0 0 13px #256eff26;
+}
+.dashboard-orbit .stats-strip b {
+  font-size: 22px;
+  line-height: 1.3;
+  color: #f5f9ff;
+}
+.dashboard-orbit .stats-strip div div > span {
+  font-size: 9px;
+  line-height: 1.55;
+  color: #d4e6fa;
+}
+.dashboard-orbit .section-heading h2 {
+  color: #f0f7ff;
+  font-size: 22px;
+}
+.dashboard-orbit .section-heading p {
+  color: #c7dcf3;
+  font-size: 12px;
+}
+.dashboard-orbit .section-heading .text-link {
+  color: #58b1ff;
+  font-size: 12px;
+}
+.dashboard-orbit :is(.tool-card, .compact-tool, .activity-list, .panel) {
+  border-color: #446387b0;
+  background: linear-gradient(135deg, #0c1a2ddd, #071326e8);
+  box-shadow:
+    inset 0 1px 0 #afcdff0a,
+    0 7px 22px #0002;
+  backdrop-filter: blur(12px);
+}
+.dashboard-orbit .tool-card {
+  border-radius: 14px;
+  padding: 23px;
+}
+.dashboard-orbit .tool-card:hover {
+  border-color: #64b1ef;
+  box-shadow: 0 0 22px #2579d328;
+  transform: none;
+}
+.dashboard-orbit .tool-card h3 {
+  font-size: 16px;
+  color: #f0f6ff;
+}
+.dashboard-orbit .tool-card p {
+  font-size: 12px;
+  color: #c3d5ec;
+  line-height: 1.7;
+}
+.dashboard-orbit .tool-card .card-category {
+  border-top-color: #304866;
+  color: #94b2d2;
+}
+.dashboard-orbit .card-arrow {
+  color: #b9d8f6;
+}
+.dashboard-orbit .tool-icon.blue {
+  color: #c7eeff;
+  background: linear-gradient(130deg, #1d74e4, #122d5a);
+  box-shadow: 0 0 15px #2785ff2b;
+}
+.dashboard-orbit .tool-icon.violet {
+  color: #ecd4ff;
+  background: linear-gradient(130deg, #783bab, #341e56);
+  box-shadow: 0 0 15px #aa55ff26;
+}
+.dashboard-orbit .tool-icon.orange {
+  color: #ffeac9;
+  background: linear-gradient(130deg, #a76c17, #4b3110);
+  box-shadow: 0 0 15px #ffbc3c21;
+}
+.dashboard-orbit .tool-icon.emerald {
+  color: #c3ffec;
+  background: #124e4c;
+}
+.dashboard-orbit .tool-icon.rose {
+  color: #ffd5e7;
+  background: #6b274c;
+}
+.dashboard-orbit .category-tabs {
+  border-color: #37577b;
+  background: #051225b3;
+  border-radius: 10px 10px 0 0;
+}
+.dashboard-orbit .category-tabs button {
+  color: #bbd1ea;
+}
+.dashboard-orbit .category-tabs .selected {
+  color: #8bd5ff;
+  border-bottom-color: #5bb9ff;
+  background: #15365880;
+}
+.dashboard-orbit .badge {
+  color: #b5ddff;
+  background: #102c48;
+  border-color: #365c83;
+}
+.dashboard-orbit .compact-tool:hover {
+  border-color: #68aee9;
+}
+.dashboard-orbit .compact-tool small {
+  color: #b2c9e2;
+}
+.dashboard-orbit .activity-list > a {
+  border-color: #304c70;
+}
+.dashboard-orbit .app-footer {
+  color: #b1c8e3;
+  border-top-color: #335271;
+}
+.dashboard-orbit[data-orbit-theme="light"] {
+  --surface: #f7fbfff0;
+  --surface-alt: #dceafa;
+  --text: #10223f;
+  --muted: #405976;
+  --border: #abc4df;
+  --primary: #2367dc;
+  color-scheme: light;
+}
+.dashboard-orbit[data-orbit-theme="light"]::before {
+  background-image:
+    linear-gradient(#ecf5ffad, #eef5ffc4),
+    url("/marketing/holyai-orbit-dashboard.webp");
+}
+.dashboard-orbit[data-orbit-theme="light"] .sidebar {
+  background: linear-gradient(150deg, #f8fbfff5, #e3eff9eb);
+  border-color: #adcae6;
+}
+.dashboard-orbit[data-orbit-theme="light"]
+  :is(
+    .sidebar-brand .logo,
+    .sidebar .nav-link,
+    .breadcrumb,
+    .breadcrumb b,
+    .topbar-actions,
+    .section-heading h2,
+    .tool-card h3,
+    .stats-strip b
+  ) {
+  color: #142b4b;
+}
+.dashboard-orbit[data-orbit-theme="light"] .sidebar .nav-link.active {
+  color: #1555b7;
+  background: linear-gradient(110deg, #c3dafa, #d8e9ff);
+}
+.dashboard-orbit[data-orbit-theme="light"] .sidebar .nav-link:hover {
+  color: #15417b;
+  background: #cbdff4;
+}
+.dashboard-orbit[data-orbit-theme="light"]
+  :is(
+    .sidebar-search,
+    .topbar,
+    .stats-strip > div,
+    .tool-card,
+    .compact-tool,
+    .activity-list,
+    .panel
+  ) {
+  background: #f5faffd9;
+  border-color: #a7bfdc;
+}
+.dashboard-orbit[data-orbit-theme="light"]
+  :is(
+    .sidebar-search,
+    .nav-label,
+    .user-card small,
+    .section-heading p,
+    .tool-card p,
+    .stats-strip div div > span,
+    .compact-tool small,
+    .app-footer
+  ) {
+  color: #435f80;
+}
+.dashboard-orbit[data-orbit-theme="light"]
+  :is(
+    .dashboard-welcome h1,
+    .dashboard-welcome p,
+    .dashboard-welcome .eyebrow
+  ) {
+  color: #112d50;
+  text-shadow: none;
+}
+.dashboard-orbit[data-orbit-theme="light"] .dashboard-title-tail {
+  background: none;
+  -webkit-text-fill-color: #2463bd;
+}
+.dashboard-orbit[data-orbit-theme="light"] .category-tabs {
+  background: #edf6ffde;
+}
+.dashboard-orbit[data-orbit-theme="light"] .category-tabs button {
+  color: #435f80;
+}
+.dashboard-orbit[data-orbit-theme="light"] .category-tabs .selected {
+  color: #174f9c;
+  background: #d5e6fa;
+}
+@media (max-width: 1150px) {
+  .dashboard-orbit .dashboard-welcome h1 {
+    font-size: 38px;
+  }
+  .dashboard-orbit .command-card {
+    padding: 27px;
+    gap: 26px;
+  }
+  .dashboard-orbit .command-copy h2 {
+    font-size: 28px;
+  }
+  .dashboard-orbit .stats-strip > div {
+    padding: 13px 11px;
+    gap: 9px;
+  }
+  .dashboard-orbit .stats-strip .stat-icon {
+    width: 34px;
+    height: 36px;
+  }
+}
+@media (max-width: 760px) {
+  .dashboard-orbit::before {
+    background-position: 36% top;
+  }
+  .dashboard-orbit .topbar {
+    backdrop-filter: blur(17px);
+  }
+  .dashboard-orbit .dashboard {
+    gap: 23px;
+  }
+  .dashboard-orbit .dashboard-welcome {
+    min-height: 173px;
+    gap: 12px;
+  }
+  .dashboard-orbit .dashboard-welcome h1 {
+    font-size: 34px;
+    letter-spacing: -1px;
+    line-height: 1.08;
+  }
+  .dashboard-orbit .dashboard-welcome .eyebrow {
+    font-size: 8px;
+    letter-spacing: 1.6px;
+  }
+  .dashboard-orbit .dashboard-welcome p {
+    font-size: 12px;
+    margin-top: 13px;
+  }
+  .dashboard-orbit .dashboard-welcome .btn {
+    font-size: 0;
+    min-height: 37px;
+    padding: 9px;
+  }
+  .dashboard-orbit .command-card {
+    padding: 23px;
+    gap: 24px;
+  }
+  .dashboard-orbit .command-label {
+    font-size: 7px;
+    letter-spacing: 0.6px;
+    flex-wrap: wrap;
+  }
+  .dashboard-orbit .command-copy h2 {
+    font-size: 28px;
+  }
+  .dashboard-orbit .command-copy p {
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  .dashboard-orbit .command-form form {
+    padding: 15px 14px 11px;
+  }
+  .dashboard-orbit .command-form label {
+    font-size: 12px;
+  }
+  .dashboard-orbit .command-form textarea {
+    font-size: 12px !important;
+    min-height: 82px;
+  }
+  .dashboard-orbit .command-form-bottom span {
+    max-width: 75%;
+    font-size: 8px;
+  }
+  .dashboard-orbit .command-suggestions {
+    gap: 6px;
+  }
+  .dashboard-orbit .command-suggestions button {
+    font-size: 8px;
+    padding: 5px 7px;
+  }
+  .dashboard-orbit .stats-strip {
+    gap: 11px;
+  }
+  .dashboard-orbit .stats-strip > div {
+    min-height: 80px;
+    padding: 12px;
+    gap: 10px;
+  }
+  .dashboard-orbit .stats-strip b {
+    font-size: 21px;
+  }
+  .dashboard-orbit .stats-strip div div > span {
+    font-size: 8px;
+  }
+  .dashboard-orbit .stats-strip .stat-icon {
+    width: 32px;
+    height: 35px;
+  }
+  .dashboard-orbit .section-heading h2 {
+    font-size: 21px;
+  }
+  .dashboard-orbit .section-heading p {
+    font-size: 11px;
+  }
+  .dashboard-orbit .section-heading .text-link {
+    font-size: 10px;
+  }
+  .dashboard-orbit .tool-card {
+    padding: 17px;
+  }
+  .dashboard-orbit .tool-card h3 {
+    font-size: 13px;
+  }
+  .dashboard-orbit .tool-card p {
+    font-size: 11px;
+  }
+  .dashboard-orbit .tool-card .card-category {
+    font-size: 6px;
+    line-height: 1.6;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-orbit *,
+  .dashboard-orbit::before {
+    transition: none !important;
+  }
+}

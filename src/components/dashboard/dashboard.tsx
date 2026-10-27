@@ -33,7 +33,8 @@ export function Dashboard({ name }: { name: string }) {
         <div>
           <div className="eyebrow">YOUR AI COMMAND CENTER</div>
           <h1>
-            Ide besar dimulai di sini<span className="blue-text">.</span>
+            Ide besar dimulai{" "}
+            <span className="dashboard-title-tail">di sini.</span>
           </h1>
           <p>
             Halo, {name.split(" ")[0]}. Apa yang ingin kamu wujudkan hari ini?
@@ -52,7 +53,8 @@ export function Dashboard({ name }: { name: string }) {
           </span>
           <h2>
             Satu tempat untuk <br />
-            semua kemungkinanmu.
+            semua{" "}
+            <span className="dashboard-command-accent">kemungkinanmu.</span>
           </h2>
           <p>
             Belajar lebih dalam, ciptakan lebih banyak,
