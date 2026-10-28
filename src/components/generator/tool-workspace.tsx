@@ -295,6 +295,11 @@ export function ToolWorkspace({ id }: { id: FeatureId }) {
             </span>
           </div>
           {job && <JobStatus job={job} />}
+          {job?.result?.source === "codex-imagegen-import" && (
+            <Alert>
+              Gambar dibuat melalui Codex ImageGen dan diimpor ke workspace ini.
+            </Alert>
+          )}
           {asset ? (
             <div className="asset-preview">
               {id === "image-generator" ? (

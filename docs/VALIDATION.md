@@ -65,3 +65,9 @@ The app now distinguishes unavailable-model, credential/access, quota and upstre
 ## Hugging Face image groundwork — 2026-10-28
 
 Production build, strict type checking, focused lint and all 31 unit/infrastructure checks passed. A browser check verified the Hugging Face image-provider card, password token field, official token-manager link, and mobile form without page errors. Image output, quota rejection and credential errors were verified with SDK-level mocked HTTP responses. No real Hugging Face image was generated: the user token and available trial-credit eligibility remain required. The provider/model remain disabled until actual configuration. Existing paid API providers were not enabled or charged.
+
+## First image artifact — 2026-10-28
+
+A real Hugging Face token authenticated successfully, but the single image request was rejected for credit/quota and produced no asset. That failed job remains failed. The built-in Codex image_gen tool subsequently generated one panda-astronaut image. Its actual PNG bytes were copied into the workspace and imported into the owner’s private HOLYAI storage as a distinct completed import, with source metadata and a visible provenance notice. The imported bytes were downloaded from storage and compared byte-for-byte with the generated file. This does not certify working native Hugging Face image generation; that provider remains disabled pending usable account quota.
+
+The real browser preview exposed a local-storage CSP issue: HTTP storage on the configured loopback port was blocked despite successful signed downloads. CSP now permits only that explicitly configured HTTP loopback origin for image/media sources. The production build passed, and an authenticated browser check loaded the imported PNG at its natural width of 1254 pixels with the provenance notice visible. Private download returned HTTP 200 with image/png.
