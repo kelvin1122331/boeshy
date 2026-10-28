@@ -157,6 +157,22 @@ export function ProviderDrawer({
             {error && <Notice error>{error}</Notice>}
             <section>
               <h3>Autentikasi</h3>
+              {provider.id === "huggingface" && (
+                <Notice>
+                  <a
+                    href="https://huggingface.co/settings/tokens"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Ambil token Hugging Face ↗
+                  </a>
+                  <p>
+                    Buat token dengan izin Inference Providers, lalu tempel di
+                    bawah. Kredit gratis terbatas dan mengikuti akun; jangan
+                    menambahkan metode pembayaran untuk percobaan gratis.
+                  </p>
+                </Notice>
+              )}
               <label>
                 Authentication method
                 <select {...form.register("authMethod")}>
@@ -675,8 +691,9 @@ export function ProvidersPage({
       )}
       {group === "image" && (
         <Notice>
-          Adapter saat ini mendukung text-to-image dengan keluaran PNG. Image
-          editing dan image-to-image tidak ditampilkan sebagai fitur aktif.
+          Adapter saat ini mendukung text-to-image dengan keluaran PNG/JPEG.
+          Image editing dan image-to-image tidak ditampilkan sebagai fitur
+          aktif.
         </Notice>
       )}
       {group === "video" && (

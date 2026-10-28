@@ -5,6 +5,7 @@ import { db } from "@/lib/database";
 import { putFile } from "@/lib/storage";
 import type { GenerationInput } from "@/lib/validation/schemas";
 import { AppError } from "@/lib/errors";
+import { huggingFaceImage } from "@/lib/ai/huggingface-image";
 async function finishAsset(
   job: GenerationJob,
   bytes: Buffer,
@@ -74,6 +75,21 @@ export async function generateImage(
     where: { id: job.id },
     data: { result: { usageId: usage.id, modelId: route.id } },
   });
+  if (route.providerId === "huggingface") {
+    const [width, height] = size.split("x").map(Number);
+    const result = await huggingFaceImage(
+      route,
+      `${input.prompt}\nStyle: ${input.options.style || "Photorealistic"}`,
+      width,
+      height,
+    );
+    await finishAsset(job, result.bytes, result.mime, result.ext);
+    await db.usageRecord.update({
+      where: { id: usage.id },
+      data: { status: "completed" },
+    });
+    return;
+  }
   const r = await openaiFor(route).images.generate({
     model: route.identifier,
     prompt: `${input.prompt}\nStyle: ${input.options.style || "Photorealistic"}`,

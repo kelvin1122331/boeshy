@@ -19,6 +19,10 @@ export async function probeProvider(
   let url = config.endpoint;
   const headers: Record<string, string> = {};
   switch (config.id) {
+    case "huggingface":
+      url = "https://huggingface.co/api/whoami-v2";
+      headers.Authorization = `Bearer ${config.secrets.apiKey}`;
+      break;
     case "openai":
       url += "/models";
       headers.Authorization = `Bearer ${config.secrets.apiKey}`;
@@ -101,6 +105,7 @@ export async function probeProvider(
     if (
       data?.error ||
       data?.success === false ||
+      (config.id === "huggingface" && typeof data?.name !== "string") ||
       (config.id === "crossref" && !Array.isArray(data?.message?.items)) ||
       (config.id === "openalex" && !Array.isArray(data?.results)) ||
       (config.id === "brave" && !Array.isArray(data?.web?.results)) ||

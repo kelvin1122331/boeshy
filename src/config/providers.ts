@@ -42,6 +42,7 @@ export type ProviderDefinition = {
     | "jobs"
     | "canva"
     | "google"
+    | "huggingface"
     | "foundation";
   optionalKey?: boolean;
   publicAccess?: boolean;
@@ -49,6 +50,21 @@ export type ProviderDefinition = {
   note?: string;
 };
 export const providers: ProviderDefinition[] = [
+  {
+    id: "huggingface",
+    name: "Hugging Face",
+    group: "ai",
+    icon: "Image",
+    description:
+      "Gambar FLUX.1-schnell melalui Hugging Face dan Nscale. Kredit percobaan mengikuti akun Hugging Face.",
+    endpoint: "https://router.huggingface.co/nscale",
+    auth: ["api_key"],
+    fields: { apiKey: "Hugging Face Token" },
+    capabilities: ["image"],
+    adapter: "huggingface",
+    docs: "https://huggingface.co/docs/inference-providers/tasks/text-to-image",
+    note: "Token memerlukan izin Inference Providers. Gunakan akun Free dengan kredit percobaan. Permintaan memakai saldo akun Hugging Face; HOLYAI tidak membeli kredit atau beralih ke OpenAI. Model: black-forest-labs/FLUX.1-schnell.",
+  },
   {
     id: "gemini",
     name: "Google Gemini",

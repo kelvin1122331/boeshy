@@ -145,6 +145,20 @@ test("failed probes redact upstream error bodies and unsupported probes never ca
   );
   expect(fetcher).not.toHaveBeenCalled();
 });
+test("HF identity probe returns authentication status without exposing the account profile", async () => {
+  const fetcher = vi
+    .fn()
+    .mockResolvedValue(
+      Response.json({
+        name: "qa-account",
+        email: "private-profile@example.test",
+      }),
+    );
+  const result = await probeProvider(fixture("huggingface"), fetcher);
+  expect(fetcher.mock.calls[0][0]).toBe("https://huggingface.co/api/whoami-v2");
+  expect(result.status).toBe("connected");
+  expect(JSON.stringify(result)).not.toContain("private-profile");
+});
 test("Gemini adapter accepts only complete responses and sends schema/timeout without leaking keys", async () => {
   const config = fixture("gemini");
   const route = {

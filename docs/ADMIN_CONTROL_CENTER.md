@@ -78,3 +78,13 @@ Unit tests cover encryption/randomization/tampering/context isolation, masks, pe
 - [Canva REST authentication](https://www.canva.dev/docs/apps/rest-apis/authentication/)
 - [Google web-server OAuth](https://developers.google.com/identity/protocols/oauth2/web-server)
 - [Adzuna search API](https://developer.adzuna.com/docs/search)
+
+## Hugging Face image adapter
+
+The Image Generation admin page includes Hugging Face token configuration and a link to its official token manager. This adapter supports only black-forest-labs/FLUX.1-schnell, routed through Hugging Face to Nscale using the official @huggingface/inference client. The provider and prepared model start disabled. Enable only after saving a real token with Inference Providers permission and verifying access. The identity probe confirms token authentication, not image generation or credit eligibility.
+
+Use a Free account with available trial credits for a free experiment. Credit amounts and eligibility are controlled by Hugging Face and may change. Existing paid balances on the account can also fund requests; HOLYAI does not purchase credits, enable billing, retry billable requests, or switch to OpenAI. HTTP 402/429 stops generation with an explanatory error. Real image generation is unverified until the account token is provided. No image is marked completed until valid PNG/JPEG bytes have been stored privately.
+
+The adapter pins the provider, restricts authenticated outbound fetches to HTTPS Hugging Face hosts, disables redirects/retries, bounds timeout/output size, and validates image signatures. Unit tests exercise the actual SDK with mocked HTTP responses for returned image bytes, credit errors and credential rejection.
+
+References: [HF text-to-image API](https://huggingface.co/docs/inference-providers/tasks/text-to-image), [token settings](https://huggingface.co/settings/tokens), [credit policy](https://huggingface.co/docs/inference-providers/pricing).

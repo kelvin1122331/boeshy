@@ -430,6 +430,14 @@ export async function deleteCredential(actorId: string, id: string) {
 export async function saveModel(actorId: string, raw: unknown) {
   await initializeAdmin();
   const input = modelSchema.parse(raw);
+  if (
+    input.providerId === "huggingface" &&
+    input.identifier !== "black-forest-labs/FLUX.1-schnell"
+  )
+    throw new AppError(
+      400,
+      "Adapter Hugging Face ini mendukung black-forest-labs/FLUX.1-schnell melalui Nscale.",
+    );
   const definition = providerById(input.providerId);
   if (
     !definition ||
